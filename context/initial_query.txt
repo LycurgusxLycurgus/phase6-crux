@@ -1,0 +1,3523 @@
+based on my BRIDGECRUX NOTES and the habit creation dynamic of QUEST-WINTERLAKE app, and the ARQUEIDENTIDAD document and FASE6 to create a crux, need you to define the best way to do it based on this specifics i will give you:
+
+
+- the app/crux will be about Arqueidentidad (in spanish) in general but only will cover FASE 6, all other fases will be placed as coming soon...
+- the main thing we will develop for the app/crux right now will be mainly the agentic ux in a telegram bot a la openclaw/hermes-agent, no frontend or anything, everything will be backend code managed by an agent dynamically, sending text diagrams (like distill.pub but in text, or similar through telegram capacities) to the user to showcase progress or similar through telegram. 
+- the prompt and file structure will be: a system prompt containing all the context of the app, its backend technical functions, tool calling, the purpose of the app/crux and the type of user it will have, and how it has to be a tutor (finding out what the user really needs and helping him based on this BEST ANSWER PROMPT) of this person from a very michel thomas perspective (the teacher is responsible, in here the tutor/crux is responsible)... and any other principles from bridgecrux i may be forgetting
+	-  an assistants.md file with all the tool calls it will have to use to satisfy the user needs and a router to the specific tool calls (no general tool calls in this case unless from my notes you find something that fits this category) and any other principles from bridgecrux i may be forgetting
+	- a folder with specific tool calls functions to call the code agenticly and execute what the user needs. 
+	- a memory of who the user is, in super compacted memories in one-line per topic that the agent will write everyday at the end of the day, re-writing all memories to make them more robust and profound instead of only adding (if a simple memory is created on monday, but on friday that memory is expanded, it will delete the first memory, re-write it add the first and the new memory in a compact form)
+		- a boostrapped process when the user starts the app so we can create a solid base of memories of who the user is and what is his goal with this crux.
+- the app/crux itself will help the user to learn and to apply the fase 6 from arqueidentidad and help them prepare each on of the weekly or bi-weekly practices. 
+- you will have to find the best way to create the simplest architecture for this crux/app/harness, if it's something static even better, but idk if it would be possible, nevertheless, try, otherwise just use convex or similar backend services. 
+- we will be using gemini-3-flash-lite model at high thinking 0.6 temperature and 1.0 topP as per these two skills to integrate gemini models: https://github.com/google-gemini/gemini-skills/blob/main/skills/gemini-interactions-api/SKILL.md & https://github.com/google-gemini/gemini-skills/blob/main/skills/gemini-api-dev/SKILL.md
+- and i think that's it, nevertheless review my bridgecrux notes and anything that is missing cover it up. 
+
+
+
+your goal is to create an extensive plan (on top of this query, which i will also attach to codex) so we can create this crux, not just as a functional agent/app/crux, but also as a first attempt to use bridgecrux in practice in order to standarize it to create cruxes in the future just by downloading a library or sdk or something along those lines, that will make creating cruxes super easily. 
+
+
+
+
+
+BEST ANSWER PROMPT
+
+You think before you write. Thinking has three moves. Writing has one rule.
+
+THINKING
+
+Resolve three questions silently before responding:
+
+1. What is this person actually trying to do? The literal query is 
+   compressed evidence of an underlying need. Often they match. 
+   Sometimes they diverge. When they diverge, answer the real need 
+   and name the interpretation in one clause, so the user can 
+   redirect if you're wrong.
+
+2. What assumption inside the query, if false, would make any direct 
+   answer useless? If one exists and matters, surface it. If none 
+   does, do not manufacture one. Forced reframes are worse than no 
+   reframes.
+
+3. Does a principle from outside this domain explain this problem 
+   better than principles inside it? If yes, build the bridge. If no, 
+   skip this move. Decoration is not insight.
+
+Calibrate depth to depth-demand. A factual question deserves a fact. 
+A transformation request deserves transformation. Reading which is 
+which is part of the thinking, not prior to it.
+
+WRITING
+
+One rule: every sentence must change what the reader knows, thinks, 
+or can do. Sentences that don't, cut.
+
+This implies — without requiring you to perform it:
+- Open where the value is, not where convention starts.
+- Move between abstraction and specific in both directions.
+- When analysis yields a position, take it. Options without 
+  recommendation is evasion in a thoughtful costume.
+- Pursue downstream consequences only as far as they change the 
+  user's current decision.
+- Match the user's level. Do not explain what they know or simplify 
+  what they handle.
+
+Claims require mechanisms. If you cannot say why something is true, 
+say you are guessing, or do not say it.
+
+Distinguish knowledge, inference, and speculation explicitly. 
+Collapsing these collapses trust.
+
+End at the threshold of the user's next real obstacle.
+
+User query:
+
+END BEST ANSWER PROMPT
+
+
+
+QUEST-WINTERLAKE
+=== BEGIN FILE: .\index.html ===
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winterlake - Conocimiento, Libertad, Significado</title>
+    <meta name="description"
+        content="Sistema de aprendizaje y practica para crianza no coercitiva basada en Winterlake.">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <div id="screen-home" class="screen active">
+            <div class="hero">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" />
+                        <circle cx="12" cy="12" r="4" />
+                    </svg>
+                </div>
+                <h1>Winterlake</h1>
+                <p class="hero-subtitle">Conocimiento, Libertad, Significado</p>
+            </div>
+
+            <div class="flex items-center justify-between mb-lg">
+                <span></span>
+                <button id="theme-toggle" class="back-btn" title="Cambiar tema" aria-label="Cambiar tema">
+                    <svg id="theme-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-11.314l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mode-cards">
+                <div class="mode-card" onclick="navigateTo('learn-menu')" role="button" tabindex="0">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                        Aprender
+                    </h3>
+                    <p>Comprende el sistema, atiende objeciones y domina sus principios.</p>
+                </div>
+
+                <div class="mode-card" onclick="navigateTo('apply-menu')" role="button" tabindex="0">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                        Aplicar
+                    </h3>
+                    <p>Crea tu identidad, practica los habitos y construye tu camino Winterlake.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-learn-menu" class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="navigateTo('home')" aria-label="Volver">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1>Aprender Winterlake</h1>
+                <button class="theme-toggle-btn back-btn" aria-label="Cambiar tema">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-11.314l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="section-nav">
+                <div class="section-nav-item active" data-section="unlearn" onclick="switchLearnTab('unlearn')">1. Objeciones</div>
+                <div class="section-nav-item" data-section="map" onclick="switchLearnTab('map')">2. Introduccion</div>
+                <div class="section-nav-item" data-section="tutor" onclick="switchLearnTab('tutor')">3. Tutor</div>
+            </div>
+
+            <div id="section-unlearn" class="card card-highlight learn-tab-panel active">
+                <h2>1. Objeciones</h2>
+                <p class="text-muted mb-lg">Antes de construir nuevos modelos, examinemos las suposiciones que pueden
+                    estar bloqueando el camino.</p>
+
+                <div class="video-container mb-lg">
+                    <iframe width="100%" height="auto" src="https://www.youtube-nocookie.com/embed/nb_vnr598Jw"
+                        title="Winterlake: Antes de Winterlake" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen style="aspect-ratio: 16/9;"></iframe>
+                    <div class="text-center mt-sm">
+                        <a href="https://youtu.be/nb_vnr598Jw" target="_blank" class="text-muted"
+                            style="text-decoration: underline; font-size: var(--text-xs);">
+                            Problemas con el video? Ver en YouTube ->
+                        </a>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="mb-sm">Objeciones comunes que abordaremos:</h3>
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <strong>"Los ninos necesitan disciplina o se malcrian"</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Es la coercion
+                                    realmente la unica forma de estructura?</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <strong>"Sin autoridad no aprenderan cosas importantes"</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Que pasa cuando los
+                                    intereses autenticos guian el aprendizaje?</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <strong>"El mundo real requiere cumplimiento"</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Es mejor entrenar
+                                    obediencia o creatividad para resolver problemas?</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-primary" onclick="markSectionComplete('unlearn'); scrollToSection('map')">
+                    Continuar a la Introduccion ->
+                </button>
+            </div>
+
+            <div id="section-map" class="card card-highlight mt-xl learn-tab-panel">
+                <h2>2. Introduccion</h2>
+                <p class="text-muted mb-lg">La estructura central de Winterlake explicada de forma clara y concisa.</p>
+
+                <div class="video-container mb-lg">
+                    <iframe width="100%" height="auto" src="https://www.youtube-nocookie.com/embed/d2yqiAmdT2E"
+                        title="Introduccion a Winterlake" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen style="aspect-ratio: 16/9;"></iframe>
+                    <div class="text-center mt-sm">
+                        <a href="https://www.youtube.com/watch?v=d2yqiAmdT2E" target="_blank" class="text-muted"
+                            style="text-decoration: underline; font-size: var(--text-xs);">
+                            Ver en YouTube ->
+                        </a>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="mb-md">Las Tres Diadas</h3>
+
+                    <div class="mb-md" style="padding: var(--sp-3); border-left: 3px solid var(--oxide);">
+                        <strong>1. Frivolizacion -> Tomar en serio</strong>
+                        <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">El modelo del mundo del nino
+                            es una teoria viva, no ruido.</p>
+                        <a href="https://gemini.google.com/gem/1De7hMAn0pf79eGQC6FCkZ7Gp0ubyYDIE?usp=sharing" target="_blank"
+                            class="concept-help-link mt-sm">
+                            Consultar chatbot sobre esta diada ->
+                        </a>
+                    </div>
+
+                    <div class="mb-md" style="padding: var(--sp-3); border-left: 3px solid var(--oxide-light);">
+                        <strong>2. Coercion -> No coercion</strong>
+                        <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Siempre existe un camino
+                            creativo. La coercion es rendirse.</p>
+                        <a href="https://gemini.google.com/gem/1De7hMAn0pf79eGQC6FCkZ7Gp0ubyYDIE?usp=sharing" target="_blank"
+                            class="concept-help-link mt-sm">
+                            Consultar chatbot sobre esta diada ->
+                        </a>
+                    </div>
+
+                    <div style="padding: var(--sp-3); border-left: 3px solid var(--success);">
+                        <strong>3. Desgaste -> Ritualizacion</strong>
+                        <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">El mundo esta inconcluso, no
+                            condenado. Mitosofia lo hace aventura.</p>
+                        <a href="https://gemini.google.com/gem/1De7hMAn0pf79eGQC6FCkZ7Gp0ubyYDIE?usp=sharing" target="_blank"
+                            class="concept-help-link mt-sm">
+                            Consultar chatbot sobre esta diada ->
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex gap-sm mt-lg" style="flex-wrap: wrap;">
+                    <span class="badge">Provisionalismo</span>
+                    <span class="badge">Mitosofia</span>
+                    <span class="badge">Intereses autenticos</span>
+                </div>
+
+                <button class="btn btn-primary mt-lg" onclick="markSectionComplete('map'); scrollToSection('tutor')">
+                    Continuar al Tutor ->
+                </button>
+            </div>
+
+            <div id="section-tutor" class="card card-highlight mt-xl learn-tab-panel">
+                <h2>3. Tutor Winterlake</h2>
+                <p class="text-muted mb-lg">Un tutor conversacional que te guiara por los modulos del sistema y
+                    verificara tu comprension.</p>
+
+                <div class="panel">
+                    <h3 class="mb-sm">Que hara el tutor?</h3>
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <strong>Ensenar por modulos</strong>
+                                <p class="text-muted" style="margin: 0;">Cada concepto se presenta en partes digestibles
+                                    con ejemplos.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <strong>Verificar comprension</strong>
+                                <p class="text-muted" style="margin: 0;">Te hara preguntas para asegurar que entiendes
+                                    antes de avanzar.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <strong>Aplicar a tu contexto</strong>
+                                <p class="text-muted" style="margin: 0;">Te pedira ejemplos de tu vida real para
+                                    practicar.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="panel" style="background: rgba(168, 92, 50, 0.1); border-color: var(--oxide);">
+                    <h3 class="mb-sm">Como usar el tutor</h3>
+                    <ol style="margin: 0; padding-left: var(--sp-5);">
+                        <li class="mb-sm">Abre el enlace en una nueva pestana</li>
+                        <li class="mb-sm">Presentate y di que quieres aprender Winterlake</li>
+                        <li class="mb-sm">Sigue las instrucciones del tutor y responde sus preguntas</li>
+                        <li>Cuando completes un modulo, vuelve aqui y marcalo</li>
+                    </ol>
+                </div>
+
+                <a href="https://gemini.google.com/gem/1De7hMAn0pf79eGQC6FCkZ7Gp0ubyYDIE?usp=sharing" target="_blank"
+                    class="btn btn-primary mt-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Abrir Tutor en Gemini ->
+                </a>
+
+                <div class="mt-xl">
+                    <h3 class="mb-md">Modulos completados</h3>
+                    <div id="module-list">
+                        <div class="rubric-item" onclick="toggleModule(this, 'intro')">
+                            <div class="rubric-checkbox"></div>
+                            <div>
+                                <strong>Introduccion y Provisionalismo</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Que es Winterlake y
+                                    la postura provisional.</p>
+                            </div>
+                        </div>
+                        <div class="rubric-item" onclick="toggleModule(this, 'dyad1')">
+                            <div class="rubric-checkbox"></div>
+                            <div>
+                                <strong>Diada 1: Tomar en serio</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Frivolizacion vs
+                                    honrar el modelo del nino.</p>
+                            </div>
+                        </div>
+                        <div class="rubric-item" onclick="toggleModule(this, 'dyad2')">
+                            <div class="rubric-checkbox"></div>
+                            <div>
+                                <strong>Diada 2: No coercion</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Creatividad
+                                    colaborativa vs fuerza.</p>
+                            </div>
+                        </div>
+                        <div class="rubric-item" onclick="toggleModule(this, 'dyad3')">
+                            <div class="rubric-checkbox"></div>
+                            <div>
+                                <strong>Diada 3: Mitosofia</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Ritualizacion de
+                                    intereses autenticos.</p>
+                            </div>
+                        </div>
+                        <div class="rubric-item" onclick="toggleModule(this, 'practice')">
+                            <div class="rubric-checkbox"></div>
+                            <div>
+                                <strong>Practica integrada</strong>
+                                <p class="text-muted" style="margin: 0; font-size: var(--text-sm);">Aplicar las diadas
+                                    en escenarios reales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-success mt-lg" onclick="navigateTo('home')">
+                    Volver al inicio
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-apply-menu" class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="navigateTo('home')" aria-label="Volver">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1>Aplicar Winterlake</h1>
+                <button class="theme-toggle-btn back-btn" aria-label="Cambiar tema">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-11.314l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="dashboard" onclick="switchApplyTab('dashboard')">Practica</button>
+                <button class="tab" data-tab="history" onclick="switchApplyTab('history')">Historial</button>
+            </div>
+
+            <div id="apply-dashboard" class="apply-tab-content active">
+                <div id="apply-main-content"></div>
+            </div>
+
+            <div id="apply-history" class="apply-tab-content"></div>
+        </div>
+
+        <div id="apply-modal" class="modal-overlay" role="dialog" aria-modal="true">
+        </div>
+
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/learn.js"></script>
+    <script src="js/apply.js"></script>
+    <script src="js/feedback.js"></script>
+    <script src="js/forms.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
+
+
+=== END FILE: .\index.html ===
+
+
+=== BEGIN FILE: .\css\main.css ===
+
+/* ===================================================================
+   WINTERLAKE â€” "Ink over Water" Design System
+   ===================================================================
+   Aesthetic Rationale:
+   - Typography: Lora (serif) for headings + body, JetBrains Mono for labels
+   - Palette: Parchment/Ink (light), Deep Slate/Moonlight (dark)
+   - No generic cards/gradients â€” fluid, calligraphic borders, ink splatter accents
+   - Mobile-first, single-column, asymmetric spacing
+   =================================================================== */
+
+/* --- Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* --- CSS Reset --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===================================================================
+   DESIGN TOKENS
+   =================================================================== */
+:root {
+    /* --- Light Mode: Ink over Parchment --- */
+    --ink: #1a1612;
+    --ink-muted: #5a524a;
+    --parchment: #f7f4ef;
+    --parchment-deep: #ebe6dc;
+    --oxide: #a85c32;               /* Rust-orange accent */
+    --oxide-light: #d4a574;
+    --water: rgba(26, 22, 18, 0.06); /* Subtle wash */
+    --water-deep: rgba(26, 22, 18, 0.12);
+    --border-ink: rgba(26, 22, 18, 0.2);
+    --border-heavy: rgba(26, 22, 18, 0.4);
+    --success: #2d6a4f;
+    --success-bg: #d8f3dc;
+    --identity-bg-start: #3a2015;
+    --identity-bg-end: #a85c32;
+    --identity-text: #f7f4ef;
+    --identity-divider: rgba(247, 244, 239, 0.42);
+
+    /* --- Typography --- */
+    --font-serif: 'Lora', 'Georgia', serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+    /* --- Sizes --- */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.375rem;
+    --text-2xl: 1.75rem;
+    --text-3xl: 2.25rem;
+
+    /* --- Spacing --- */
+    --sp-1: 0.25rem;
+    --sp-2: 0.5rem;
+    --sp-3: 0.75rem;
+    --sp-4: 1rem;
+    --sp-5: 1.5rem;
+    --sp-6: 2rem;
+    --sp-8: 3rem;
+    --sp-10: 4rem;
+
+    /* --- Radii & Shadows --- */
+    --radius: 3px;
+    --radius-lg: 8px;
+    --shadow-soft: 0 4px 20px rgba(26, 22, 18, 0.08);
+    --shadow-ink: 0 2px 8px rgba(26, 22, 18, 0.15);
+
+    /* --- Transitions --- */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+}
+
+/* --- Dark Mode: Moonlight on Slate --- */
+[data-theme="dark"] {
+    --ink: #e8e4dc;
+    --ink-muted: #c4bbb1;
+    --parchment: #141210;
+    --parchment-deep: #1e1b18;
+    --oxide: #d4a574;
+    --oxide-light: #e8c9a8;
+    --water: rgba(232, 228, 220, 0.04);
+    --water-deep: rgba(232, 228, 220, 0.08);
+    --border-ink: rgba(232, 228, 220, 0.15);
+    --border-heavy: rgba(232, 228, 220, 0.3);
+    --success: #52b788;
+    --success-bg: #1b3d2f;
+    --identity-bg-start: #24140d;
+    --identity-bg-end: #6c3a22;
+    --identity-text: #f3eadf;
+    --identity-divider: rgba(243, 234, 223, 0.38);
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-ink: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ===================================================================
+   BASE STYLES
+   =================================================================== */
+html {
+    font-size: 16px;
+    background: var(--parchment);
+    color: var(--ink);
+    transition: background var(--transition-base), color var(--transition-base);
+}
+
+body {
+    font-family: var(--font-serif);
+    line-height: 1.7;
+    min-height: 100vh;
+    background: var(--parchment);
+    /* Subtle paper texture via gradient */
+    background-image: radial-gradient(ellipse at 20% 0%, var(--water) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 100%, var(--water-deep) 0%, transparent 40%);
+}
+
+/* ===================================================================
+   LAYOUT
+   =================================================================== */
+.app-container {
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--parchment);
+    position: relative;
+}
+
+@media (min-width: 600px) {
+    .app-container {
+        box-shadow: var(--shadow-soft);
+    }
+}
+
+.screen {
+    display: none;
+    padding: var(--sp-5);
+    min-height: 100vh;
+    animation: fadeIn 0.3s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================================================================
+   TYPOGRAPHY
+   =================================================================== */
+h1, h2, h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); margin-bottom: var(--sp-4); }
+h3 { font-size: var(--text-lg); margin-bottom: var(--sp-2); }
+
+p { margin-bottom: var(--sp-4); }
+
+.text-muted {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+}
+
+.text-center { text-align: center; }
+
+.label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+}
+
+/* ===================================================================
+   HEADER
+   =================================================================== */
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-6);
+    padding-bottom: var(--sp-4);
+    border-bottom: 2px solid var(--border-ink);
+}
+
+.header h1 {
+    font-size: var(--text-xl);
+    flex: 1;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--sp-2);
+    color: var(--oxide);
+    border-radius: var(--radius);
+    transition: background var(--transition-fast);
+}
+
+.back-btn:hover { background: var(--water-deep); }
+.back-btn:focus-visible { outline: 2px solid var(--oxide); outline-offset: 2px; }
+
+/* ===================================================================
+   BUTTONS
+   =================================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    width: 100%;
+    background: var(--ink);
+    color: var(--parchment);
+}
+
+.btn:hover {
+    background: transparent;
+    color: var(--ink);
+}
+
+.btn:focus-visible { outline: 2px solid var(--oxide); outline-offset: 2px; }
+
+.btn-primary {
+    background: var(--ink);
+    color: var(--parchment);
+    border-color: var(--ink);
+}
+
+.btn-primary:hover {
+    background: var(--oxide);
+    border-color: var(--oxide);
+    color: var(--parchment);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--border-heavy);
+}
+
+.btn-secondary:hover {
+    border-color: var(--ink);
+}
+
+.btn-success {
+    background: var(--success);
+    border-color: var(--success);
+    color: var(--parchment);
+}
+
+.btn-success:hover {
+    background: transparent;
+    color: var(--success);
+}
+
+.btn-sm {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--text-xs);
+}
+
+/* ===================================================================
+   CARDS / PANELS
+   =================================================================== */
+.card {
+    background: var(--parchment);
+    border: 1px solid var(--border-ink);
+    border-radius: var(--radius-lg);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-4);
+    box-shadow: var(--shadow-soft);
+}
+
+.card-highlight {
+    border-left: 4px solid var(--oxide);
+}
+
+.card-clickable {
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-ink);
+}
+
+.panel {
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+    border: 2px solid var(--border-heavy);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-5);
+}
+
+/* ===================================================================
+   FORMS
+   =================================================================== */
+.form-group { margin-bottom: var(--sp-5); }
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--sp-2);
+    color: var(--ink);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: var(--sp-3);
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    background: var(--parchment);
+    color: var(--ink);
+    border: 1px solid var(--border-ink);
+    border-radius: var(--radius);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--ink-muted);
+    opacity: 1;
+}
+
+.form-input,
+.form-textarea,
+.form-select,
+.form-select option {
+    color: var(--ink);
+}
+
+.form-select option {
+    background: var(--parchment);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--oxide);
+    box-shadow: 0 0 0 3px rgba(168, 92, 50, 0.15);
+}
+
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+input, textarea, select { font-family: inherit; font-size: inherit; }
+
+/* ===================================================================
+   PROGRESS GRID (Habit Tracker)
+   =================================================================== */
+.progress-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--sp-1);
+    margin-bottom: var(--sp-4);
+}
+
+.progress-cell {
+    aspect-ratio: 1;
+    border: 2px solid var(--border-heavy);
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    background: var(--parchment);
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.progress-cell.filled {
+    background: var(--oxide-light);
+    border-color: var(--oxide);
+}
+
+.progress-cell.filled::after {
+    content: "â—";
+    color: var(--oxide);
+    font-size: var(--text-lg);
+}
+
+.progress-cell.rest {
+    background: repeating-linear-gradient(
+        135deg,
+        var(--ink-muted),
+        var(--ink-muted) 4px,
+        var(--parchment-deep) 4px,
+        var(--parchment-deep) 8px
+    );
+    border-color: var(--ink-muted);
+}
+
+.progress-cell.rest::after {
+    content: "R";
+    color: var(--parchment);
+    font-weight: 600;
+}
+
+.progress-cell.today {
+    box-shadow: 0 0 0 2px var(--oxide);
+}
+
+@keyframes stamp {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.progress-cell.stamp { animation: stamp 200ms ease-out; }
+
+/* ===================================================================
+   TABS
+   =================================================================== */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-ink);
+    margin-bottom: var(--sp-5);
+}
+
+.tab {
+    flex: 1;
+    padding: var(--sp-3);
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    position: relative;
+}
+
+.tab.active { color: var(--ink); }
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--oxide);
+}
+
+.tab:focus-visible { outline: 2px solid var(--oxide); outline-offset: -2px; }
+
+/* ===================================================================
+   BADGES
+   =================================================================== */
+.badge {
+    display: inline-flex;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    padding: var(--sp-1) var(--sp-2);
+    background: var(--water-deep);
+    border: 1px solid var(--border-ink);
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-success {
+    background: var(--success-bg);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.badge-oxide {
+    background: rgba(168, 92, 50, 0.15);
+    border-color: var(--oxide);
+    color: var(--oxide);
+}
+
+/* ===================================================================
+   HERO SECTION (Home)
+   =================================================================== */
+.hero {
+    text-align: center;
+    padding: var(--sp-8) var(--sp-5);
+    margin-bottom: var(--sp-5);
+    border-bottom: 2px solid var(--border-ink);
+}
+
+.hero-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto var(--sp-5);
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--ink);
+}
+
+.hero h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--sp-2);
+    font-weight: 700;
+}
+
+.hero-subtitle {
+    font-size: var(--text-lg);
+    color: var(--ink-muted);
+    font-style: italic;
+}
+
+/* ===================================================================
+   MODE CARDS (Home)
+   =================================================================== */
+.mode-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+}
+
+.mode-card {
+    padding: var(--sp-5);
+    border: 2px solid var(--border-ink);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    background: var(--parchment);
+}
+
+.mode-card:hover {
+    border-color: var(--ink);
+    background: var(--water);
+}
+
+.mode-card h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-2);
+}
+
+.mode-card p {
+    color: var(--ink-muted);
+    margin: 0;
+    font-size: var(--text-sm);
+}
+
+/* ===================================================================
+   SECTION NAVIGATION
+   =================================================================== */
+.section-nav {
+    display: flex;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-5);
+    overflow-x: auto;
+    padding-bottom: var(--sp-2);
+}
+
+.section-nav-item {
+    flex-shrink: 0;
+    padding: var(--sp-2) var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--water);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.section-nav-item.active {
+    background: var(--water-deep);
+    border-color: var(--oxide);
+    color: var(--oxide);
+}
+
+.section-nav-item.completed {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.learn-tab-panel {
+    display: none;
+}
+
+.learn-tab-panel.active {
+    display: block;
+}
+
+/* ===================================================================
+   STEP LIST
+   =================================================================== */
+.step-list { list-style: none; }
+
+.step-item {
+    display: flex;
+    gap: var(--sp-4);
+    padding: var(--sp-4) 0;
+    border-bottom: 1px solid var(--border-ink);
+}
+
+.step-item:last-child { border-bottom: none; }
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    background: var(--ink);
+    color: var(--parchment);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-number.completed { background: var(--success); }
+
+.step-content { flex: 1; }
+
+/* ===================================================================
+   VIDEO PLACEHOLDER
+   =================================================================== */
+.video-placeholder {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-muted) 100%);
+    aspect-ratio: 16/9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--parchment);
+    margin-bottom: var(--sp-5);
+    border: 2px solid var(--ink);
+}
+
+.video-placeholder svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.7;
+    margin-bottom: var(--sp-3);
+}
+
+.video-container { margin-bottom: var(--sp-5); }
+
+/* ===================================================================
+   RUBRIC / CHECKLIST
+   =================================================================== */
+.rubric-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    border: 1px solid var(--border-ink);
+    margin-bottom: var(--sp-2);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.rubric-item:hover { background: var(--water); }
+
+.rubric-item.checked {
+    background: var(--success-bg);
+    border-color: var(--success);
+}
+
+.rubric-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-heavy);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+}
+
+.rubric-item.checked .rubric-checkbox {
+    background: var(--success);
+    border-color: var(--success);
+    color: var(--parchment);
+}
+
+.rubric-item.checked .rubric-checkbox::after {
+    content: "âœ“";
+    font-size: var(--text-sm);
+}
+
+/* ===================================================================
+   IDENTITY PANEL
+   =================================================================== */
+.identity-panel {
+    background: linear-gradient(135deg, var(--identity-bg-start) 0%, var(--identity-bg-end) 100%);
+    color: var(--identity-text);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-5);
+    border: none;
+}
+
+.identity-panel h3 {
+    color: var(--identity-text);
+    margin-bottom: var(--sp-2);
+}
+
+.identity-panel .label {
+    color: var(--identity-text);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+    opacity: 0.9;
+}
+
+.identity-sealed {
+    font-style: italic;
+    font-size: var(--text-lg);
+    margin: var(--sp-3) 0;
+}
+
+.belief-item {
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--identity-divider);
+    font-size: var(--text-sm);
+}
+
+.belief-item:last-child { border-bottom: none; }
+
+.concept-help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--oxide);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-decoration: underline;
+}
+
+.concept-help-link:hover {
+    color: var(--ink);
+}
+
+.practice-guide-card {
+    background: linear-gradient(180deg, var(--water) 0%, var(--parchment) 100%);
+}
+
+.recovery-card {
+    border-left: 4px solid var(--oxide);
+}
+
+.reward-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    border: 1px solid var(--border-ink);
+    border-radius: var(--radius);
+    background: var(--water);
+    color: var(--ink);
+}
+
+.reward-check input {
+    margin-top: 0.2rem;
+    accent-color: var(--oxide);
+}
+
+/* ===================================================================
+   HABIT CARD (Active Week)
+   =================================================================== */
+.habit-card {
+    background: var(--parchment-deep);
+    border: 2px dashed var(--oxide);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-5);
+}
+
+.habit-card h4 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--sp-2);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+.habit-dyad {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    color: var(--oxide);
+    margin-bottom: var(--sp-3);
+}
+
+/* ===================================================================
+   MARK DAY MODAL
+   =================================================================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--sp-4);
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+    background: var(--parchment);
+    padding: var(--sp-5);
+    max-width: 400px;
+    width: 100%;
+    border: 2px solid var(--ink);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--border-ink);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--text-xl);
+    cursor: pointer;
+    color: var(--ink-muted);
+}
+
+.modal-close:hover { color: var(--ink); }
+
+/* ===================================================================
+   STREAK / PROGRESS HEADER
+   =================================================================== */
+.streak-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+    background: var(--ink);
+    color: var(--parchment);
+    margin-bottom: var(--sp-5);
+    border: 2px solid var(--ink);
+}
+
+.streak-number {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+}
+
+/* ===================================================================
+   WEEK SELECTOR
+   =================================================================== */
+.week-selector {
+    display: flex;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-5);
+}
+
+.week-btn {
+    flex: 1;
+    padding: var(--sp-3);
+    border: 2px solid var(--border-ink);
+    background: var(--parchment);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.week-btn.active {
+    border-color: var(--oxide);
+    background: rgba(168, 92, 50, 0.1);
+}
+
+.week-btn.completed {
+    border-color: var(--success);
+    background: var(--success-bg);
+}
+
+.week-btn.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===================================================================
+   APPLY TAB CONTENT
+   =================================================================== */
+.apply-tab-content { display: none; }
+.apply-tab-content.active { display: block; }
+
+/* ===================================================================
+   UTILITY CLASSES
+   =================================================================== */
+.mb-sm { margin-bottom: var(--sp-2); }
+.mb-md { margin-bottom: var(--sp-4); }
+.mb-lg { margin-bottom: var(--sp-5); }
+.mb-xl { margin-bottom: var(--sp-6); }
+.mt-sm { margin-top: var(--sp-2); }
+.mt-md { margin-top: var(--sp-4); }
+.mt-lg { margin-top: var(--sp-5); }
+.mt-xl { margin-top: var(--sp-6); }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-sm { gap: var(--sp-2); }
+.gap-md { gap: var(--sp-4); }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.w-full { width: 100%; }
+.hidden { display: none !important; }
+
+/* ===================================================================
+   REDUCED MOTION
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+=== END FILE: .\css\main.css ===
+
+
+=== BEGIN FILE: .\js\app.js ===
+
+// ===== APP INITIALIZATION =====
+// File: js/app.js
+
+function updateUI() {
+    ['unlearn', 'map'].forEach(sectionId => {
+        const navItem = document.querySelector(`#screen-learn-menu .section-nav-item[data-section="${sectionId}"]`);
+        if (navItem) {
+            navItem.classList.toggle('completed', !!AppState.learnProgress[sectionId]);
+        }
+    });
+
+    // Update streak display if it exists
+    const streakEl = document.getElementById('streak-count');
+    if (streakEl && AppState.apply) {
+        streakEl.textContent = AppState.apply.streak || 0;
+    }
+
+    // Restore module checkmarks
+    const modules = AppState.learnProgress.modules || {};
+    Object.keys(modules).forEach(moduleId => {
+        if (modules[moduleId]) {
+            const items = document.querySelectorAll('.rubric-item');
+            items.forEach(item => {
+                // Check if this item corresponds to the module
+                if (item.onclick && item.onclick.toString().includes(moduleId)) {
+                    item.classList.add('checked');
+                }
+            });
+        }
+    });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    initTheme();
+
+    // If on apply screen, initialize it
+    if (AppState.currentScreen === 'apply-menu') {
+        initApplyMode();
+    }
+});
+
+function initTheme() {
+    applyTheme(AppState.theme || 'light');
+
+    const toggleBtns = document.querySelectorAll('.theme-toggle-btn, #theme-toggle');
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newTheme = AppState.theme === 'light' ? 'dark' : 'light';
+            AppState.theme = newTheme;
+            applyTheme(newTheme);
+            saveState();
+        });
+    });
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Update all theme toggle icons
+    const icons = document.querySelectorAll('#theme-toggle-icon, .theme-toggle-btn svg');
+    icons.forEach(icon => {
+        if (theme === 'dark') {
+            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />';
+        } else {
+            icon.innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-11.314l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />';
+        }
+    });
+}
+
+
+=== END FILE: .\js\app.js ===
+
+
+=== BEGIN FILE: .\js\apply.js ===
+
+// ===== APPLY MODE =====
+// File: js/apply.js
+
+const WINTERLAKE_CHATBOT_URL = 'https://gemini.google.com/gem/1Qmi0rKMrP5adyvW6iPBNuXG59NiUABBG?usp=sharing';
+
+function initApplyMode() {
+    recalculateDerivedState();
+    renderApplyScreen();
+
+    const activeTab = document.querySelector('#screen-apply-menu .tab.active');
+    if (activeTab && activeTab.dataset.tab === 'history') {
+        renderHistory();
+    }
+}
+
+function renderApplyScreen() {
+    const apply = AppState.apply;
+    const container = document.getElementById('apply-main-content');
+    if (!container) return;
+
+    if (!apply.identity.sealed) {
+        renderIdentityCreation(container);
+        return;
+    }
+
+    if (!apply.startDate) {
+        renderDaySelection(container);
+        return;
+    }
+
+    renderDashboard(container);
+}
+
+function renderIdentityCreation(container) {
+    const identity = AppState.apply.identity;
+
+    container.innerHTML = `
+        <div class="identity-creation">
+            <h2 class="mb-md">Crea tu identidad Winterlake</h2>
+            <p class="text-muted mb-lg">
+                Conserva un nombre para tu identidad, y luego dale profundidad con dos ejercicios:
+                tu dreamline y tu fear-setting.
+            </p>
+
+            <form id="identity-form">
+                <div class="form-group">
+                    <label class="form-label" for="identity-name">Nombre de tu identidad</label>
+                    <input
+                        type="text"
+                        id="identity-name"
+                        class="form-input"
+                        placeholder="Ej: Guia sereno del invierno"
+                        value="${escapeHtml(identity.name)}"
+                        required
+                    >
+                    <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                        Elige un nombre simple que te recuerde como quieres pensar, decidir y cuidar.
+                    </p>
+                </div>
+
+                <div class="card mb-lg">
+                    <h3 class="mb-sm">1. Dreamline: tu meta sin limites</h3>
+                    <p class="text-muted mb-md">
+                        Imagina que no tienes limites de dinero, tiempo o energia. Que quisieras tener,
+                        hacer y ser para ti y para tus hijos?
+                    </p>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dream-have">Quiero tener</label>
+                        <textarea id="dream-have" class="form-textarea" required>${escapeHtml(identity.dreamline.have)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Ejemplo: tiempo tranquilo, una casa con mas dialogo, acceso a experiencias ricas.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dream-do">Quiero hacer</label>
+                        <textarea id="dream-do" class="form-textarea" required>${escapeHtml(identity.dreamline.do)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Ejemplo: explorar intereses juntos, viajar, construir proyectos reales con mis hijos.
+                        </p>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="dream-be">Quiero ser</label>
+                        <textarea id="dream-be" class="form-textarea" required>${escapeHtml(identity.dreamline.be)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Ejemplo: una persona curiosa, libre, firme sin coercion y llena de significado.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card mb-lg">
+                    <h3 class="mb-sm">2. Fear-setting: ponle forma al miedo</h3>
+                    <p class="text-muted mb-md">
+                        Aqui no se trata de negar el miedo, sino de volverlo pensable. Escribelo de forma clara
+                        y responde con prevencion, reparacion, beneficios parciales y costo de no hacer nada.
+                    </p>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fear-what-if">1. Que pasa si...?</label>
+                        <textarea id="fear-what-if" class="form-textarea" required>${escapeHtml(identity.fearSetting.whatIf)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Ejemplo: "Y si demasiada libertad desordena a mis hijos?".
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fear-prevent">Como lo prevengo dentro de Winterlake?</label>
+                        <textarea id="fear-prevent" class="form-textarea" required>${escapeHtml(identity.fearSetting.prevent)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Usa ideas como creatividad, creacion de conocimiento, no coercion, no frivolizacion y no drenar significado.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fear-repair">Como lo reparo si ocurre?</label>
+                        <textarea id="fear-repair" class="form-textarea" required>${escapeHtml(identity.fearSetting.repair)}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fear-partial-wins">2. Beneficios parciales de intentarlo</label>
+                        <textarea id="fear-partial-wins" class="form-textarea" required>${escapeHtml(identity.fearSetting.partialWins)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Ejemplo: aunque no logre 100% libertad todavia, puedo escuchar mejor, reducir peleas y entender mejor a mis hijos.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fear-cost-6m">3. Costo de no actuar en 6 meses</label>
+                        <textarea id="fear-cost-6m" class="form-textarea" required>${escapeHtml(identity.fearSetting.cost6Months)}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fear-cost-1y">Costo de no actuar en 1 ano</label>
+                        <textarea id="fear-cost-1y" class="form-textarea" required>${escapeHtml(identity.fearSetting.cost1Year)}</textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="fear-cost-3y">Costo de no actuar en 3 anos</label>
+                        <textarea id="fear-cost-3y" class="form-textarea" required>${escapeHtml(identity.fearSetting.cost3Years)}</textarea>
+                        <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                            Puedes ser un poco dramatico aqui para recordar por que quieres cambiar.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Sellar identidad</button>
+            </form>
+        </div>
+    `;
+
+    document.getElementById('identity-form').addEventListener('submit', handleSealIdentity);
+}
+
+function handleSealIdentity(event) {
+    event.preventDefault();
+
+    const values = {
+        name: document.getElementById('identity-name').value.trim(),
+        dreamHave: document.getElementById('dream-have').value.trim(),
+        dreamDo: document.getElementById('dream-do').value.trim(),
+        dreamBe: document.getElementById('dream-be').value.trim(),
+        fearWhatIf: document.getElementById('fear-what-if').value.trim(),
+        fearPrevent: document.getElementById('fear-prevent').value.trim(),
+        fearRepair: document.getElementById('fear-repair').value.trim(),
+        fearPartialWins: document.getElementById('fear-partial-wins').value.trim(),
+        fearCost6Months: document.getElementById('fear-cost-6m').value.trim(),
+        fearCost1Year: document.getElementById('fear-cost-1y').value.trim(),
+        fearCost3Years: document.getElementById('fear-cost-3y').value.trim()
+    };
+
+    if (Object.values(values).some(value => !value)) {
+        alert('Por favor completa todos los campos antes de sellar tu identidad.');
+        return;
+    }
+
+    AppState.apply.identity = {
+        ...AppState.apply.identity,
+        name: values.name,
+        beliefs: [values.fearPartialWins, values.fearCost1Year],
+        dreamline: {
+            have: values.dreamHave,
+            do: values.dreamDo,
+            be: values.dreamBe
+        },
+        fearSetting: {
+            whatIf: values.fearWhatIf,
+            prevent: values.fearPrevent,
+            repair: values.fearRepair,
+            partialWins: values.fearPartialWins,
+            cost6Months: values.fearCost6Months,
+            cost1Year: values.fearCost1Year,
+            cost3Years: values.fearCost3Years
+        },
+        sealed: true,
+        sealedAt: Date.now()
+    };
+
+    saveState();
+    renderApplyScreen();
+}
+
+function renderDaySelection(container) {
+    container.innerHTML = `
+        <div class="day-selection">
+            ${renderIdentitySummaryPanel('Tu identidad')}
+
+            <h2 class="mb-md">En que dia de la semana estas?</h2>
+            <p class="text-muted mb-lg">
+                Elige desde que dia quieres alinear tu programa. Puedes empezar hoy como Dia 1,
+                usar hoy como Dia 7 de descanso, o elegir un dia personalizado entre el 2 y el 6.
+            </p>
+
+            <div class="flex flex-col gap-md mb-lg">
+                <button class="btn btn-primary" onclick="selectStartDay(0)">
+                    Hoy es Dia 1 (empiezo ahora)
+                </button>
+                <button class="btn btn-secondary" onclick="selectStartDay(6)">
+                    Hoy es Dia 7 de descanso (empiezo manana)
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-sm">Opcion personalizada</h3>
+                <p class="text-muted mb-md">
+                    Si tu ritmo real no coincide con esas dos opciones, empieza en el dia que si encaje contigo.
+                </p>
+                <div class="form-group">
+                    <label class="form-label" for="custom-start-day">Quiero empezar como...</label>
+                    <select id="custom-start-day" class="form-select">
+                        <option value="">Selecciona un dia</option>
+                        <option value="1">Dia 2</option>
+                        <option value="2">Dia 3</option>
+                        <option value="3">Dia 4</option>
+                        <option value="4">Dia 5</option>
+                        <option value="5">Dia 6</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="selectCustomStartDay()">Usar este dia</button>
+            </div>
+        </div>
+    `;
+}
+
+function selectStartDay(offset) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    AppState.apply.startDate = today.toISOString();
+    AppState.apply.startDayOffset = offset;
+
+    recalculateDerivedState();
+    saveState();
+    renderApplyScreen();
+}
+
+function selectCustomStartDay() {
+    const select = document.getElementById('custom-start-day');
+    const offset = Number(select.value);
+
+    if (!select.value && select.value !== '0') {
+        alert('Selecciona un dia personalizado antes de continuar.');
+        return;
+    }
+
+    selectStartDay(offset);
+}
+
+function renderDashboard(container) {
+    const apply = AppState.apply;
+    const habitDef = getCurrentHabitDefinition();
+    const habitKey = getCurrentHabitKey();
+    const habitData = apply.habits[habitKey];
+    const needsSetup = !habitData.visualization || !habitData.action;
+    const practiceGuide = getCurrentPracticeGuide();
+    const pendingRecoveryDate = getPendingRecoveryDate();
+    const isRestDay = apply.currentDay === 7;
+
+    container.innerHTML = `
+        <div class="progress-summary mb-lg">
+            <div class="flex items-center justify-between mb-sm">
+                <div class="label">Semana ${apply.currentWeek} - Dia ${apply.currentDay}${isRestDay ? ' (Descanso)' : ''}</div>
+                <div class="badge badge-oxide">${apply.streak} dias de racha</div>
+            </div>
+
+            <div class="progress-grid">
+                ${renderProgressCells()}
+            </div>
+
+            ${renderIdentitySummaryPanel('Identidad')}
+        </div>
+
+        <div class="habit-card">
+            <div class="habit-dyad">${habitDef.dyad}</div>
+            <h4>${habitDef.title}</h4>
+            <p class="text-muted mb-md">${habitDef.description}</p>
+            <p class="text-muted mb-md" style="font-size: var(--text-xs);">${habitDef.example}</p>
+            ${renderConceptHelpLink('Tienes dudas sobre esta diada o algun concepto de Winterlake?')}
+
+            <div class="card mt-lg mb-lg practice-guide-card">
+                <div class="label">${practiceGuide.label}</div>
+                <p style="margin: var(--sp-2) 0;">${practiceGuide.summary}</p>
+                <p class="text-muted mb-sm" style="font-size: var(--text-sm);">${practiceGuide.details}</p>
+                ${practiceGuide.example ? `<p class="text-muted" style="font-size: var(--text-xs); margin-bottom: 0;">${practiceGuide.example}</p>` : ''}
+            </div>
+
+            ${needsSetup ? `
+                <button class="btn btn-secondary btn-sm" onclick="openHabitSetup()">
+                    Definir mi practica
+                </button>
+            ` : `
+                <div class="mb-md">
+                    <div class="label">Mi visualizacion</div>
+                    <p style="margin: var(--sp-1) 0;">${escapeHtml(habitData.visualization)}</p>
+                </div>
+                <div class="mb-md">
+                    <div class="label">${apply.currentWeek === 1 ? 'Mi accion para la semana 2' : 'Mi accion'}</div>
+                    <p style="margin: var(--sp-1) 0;">${escapeHtml(habitData.action)}</p>
+                </div>
+                ${pendingRecoveryDate ? renderRecoveryBlock(pendingRecoveryDate) : `
+                    <button class="btn btn-primary" onclick="openMarkDayModal()" ${isRestDay ? 'disabled' : ''}>
+                        ${isRestDay ? 'Dia de descanso' : 'Marcar el dia'}
+                    </button>
+                `}
+            `}
+        </div>
+
+        <div class="card">
+            <h3 class="mb-md">Tu progreso</h3>
+            <div class="flex gap-md" style="flex-wrap: wrap;">
+                ${renderWeekBadges()}
+            </div>
+        </div>
+    `;
+}
+
+function renderProgressCells() {
+    const apply = AppState.apply;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const startDate = new Date(apply.startDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const weekStartDay = (apply.currentWeek - 1) * 7 - apply.startDayOffset;
+    let cells = '';
+
+    for (let index = 0; index < 7; index += 1) {
+        const dayNumber = index + 1;
+        const cellDate = new Date(startDate);
+        cellDate.setDate(cellDate.getDate() + weekStartDay + index);
+        const dateStr = cellDate.toISOString().split('T')[0];
+
+        const isToday = dateStr === todayStr;
+        const isFilled = !!apply.ledger[dateStr];
+        const isRest = dayNumber === 7;
+
+        let classes = 'progress-cell';
+        if (isFilled) classes += ' filled';
+        if (isRest) classes += ' rest';
+        if (isToday) classes += ' today';
+
+        cells += `<div class="${classes}" title="Dia ${dayNumber}${isRest ? ' (Descanso)' : ''}">${isRest ? '' : dayNumber}</div>`;
+    }
+
+    return cells;
+}
+
+function renderWeekBadges() {
+    const currentWeek = AppState.apply.currentWeek;
+    const phases = [
+        { label: 'Sem 1-4', start: 1, end: 4 },
+        { label: 'Sem 5-8', start: 5, end: 8 },
+        { label: 'Sem 9-12', start: 9, end: 12 }
+    ];
+
+    return phases.map(phase => {
+        const isActive = currentWeek >= phase.start && currentWeek <= phase.end;
+        const isComplete = currentWeek > phase.end;
+        const isLocked = currentWeek < phase.start;
+
+        let badgeClass = 'badge';
+        if (isActive) badgeClass += ' badge-oxide';
+        if (isComplete) badgeClass += ' badge-success';
+
+        return `<span class="${badgeClass}" ${isLocked ? 'style="opacity: 0.5;"' : ''}>${phase.label}</span>`;
+    }).join('');
+}
+
+function openHabitSetup() {
+    const habitDef = getCurrentHabitDefinition();
+    const habitKey = getCurrentHabitKey();
+    const habitData = AppState.apply.habits[habitKey];
+    const guide = getCurrentPracticeGuide();
+
+    const modal = document.getElementById('apply-modal');
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Definir tu practica</h3>
+                <button class="modal-close" onclick="closeApplyModal()">&times;</button>
+            </div>
+
+            <p class="text-muted mb-sm">${habitDef.description}</p>
+            <p class="text-muted mb-md" style="font-size: var(--text-xs);">${habitDef.example}</p>
+            ${renderConceptHelpLink('Consulta el chatbot si quieres ejemplos o aclaraciones de esta diada.')}
+
+            <div class="card mt-lg mb-lg practice-guide-card">
+                <div class="label">${guide.label}</div>
+                <p style="margin: var(--sp-2) 0;">${guide.summary}</p>
+                <p class="text-muted mb-sm" style="font-size: var(--text-sm);">${guide.details}</p>
+                ${guide.example ? `<p class="text-muted" style="font-size: var(--text-xs); margin-bottom: 0;">${guide.example}</p>` : ''}
+            </div>
+
+            <form id="habit-setup-form">
+                <div class="form-group">
+                    <label class="form-label" for="habit-visualization">${habitDef.promptVisualization}</label>
+                    <textarea id="habit-visualization" class="form-textarea" required>${escapeHtml(habitData.visualization)}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="habit-action">${AppState.apply.currentWeek === 1 ? 'Que accion minima empezaras a hacer desde la semana 2?' : habitDef.promptAction}</label>
+                    <textarea id="habit-action" class="form-textarea" required>${escapeHtml(habitData.action)}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    document.getElementById('habit-setup-form').addEventListener('submit', event => {
+        event.preventDefault();
+
+        const visualization = document.getElementById('habit-visualization').value.trim();
+        const action = document.getElementById('habit-action').value.trim();
+
+        if (!visualization || !action) {
+            alert('Por favor completa ambos campos.');
+            return;
+        }
+
+        AppState.apply.habits[habitKey].visualization = visualization;
+        AppState.apply.habits[habitKey].action = action;
+
+        saveState();
+        closeApplyModal();
+        renderApplyScreen();
+    });
+}
+
+function openMarkDayModal() {
+    const apply = AppState.apply;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const pendingRecoveryDate = getPendingRecoveryDate();
+
+    if (pendingRecoveryDate) {
+        openRecoveryModal(pendingRecoveryDate);
+        return;
+    }
+
+    if (apply.ledger[todayStr]) {
+        alert('Ya marcaste este dia. Buen trabajo.');
+        return;
+    }
+
+    const guide = getCurrentPracticeGuide();
+    const modal = document.getElementById('apply-modal');
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Marcar el dia</h3>
+                <button class="modal-close" onclick="closeApplyModal()">&times;</button>
+            </div>
+
+            <div class="card mb-lg practice-guide-card">
+                <div class="label">${guide.label}</div>
+                <p style="margin: var(--sp-2) 0;">${guide.summary}</p>
+                <p class="text-muted mb-sm" style="font-size: var(--text-sm);">${guide.details}</p>
+            </div>
+
+            <form id="mark-day-form">
+                <div class="form-group">
+                    <label class="form-label" for="mark-type">Como practicaste hoy?</label>
+                    <select id="mark-type" class="form-select" required>
+                        <option value="">Selecciona...</option>
+                        ${renderMarkTypeOptions()}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="mark-why-important">Por que esto es importante para mi?</label>
+                    <textarea id="mark-why-important" class="form-textarea" placeholder="Opcional pero recomendado"></textarea>
+                    <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                        Tus habitos y tus creencias votan por una identidad. Esa identidad influye en como decides,
+                        como resuelves problemas y como construyes significado.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="mark-action-today">Que accion evidencio mi habito hoy?</label>
+                    <textarea id="mark-action-today" class="form-textarea" placeholder="Opcional pero recomendado"></textarea>
+                    <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                        Es el voto de hoy por tu identidad. Puede ser una frase concreta, una observacion real o la accion minima que elegiste.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="mark-action-tomorrow">Que accion hare manana como evidencia?</label>
+                    <textarea id="mark-action-tomorrow" class="form-textarea" placeholder="Opcional pero recomendado"></textarea>
+                    <p class="text-muted mt-sm" style="font-size: var(--text-xs);">
+                        Las creencias tambien son predicciones. Cuando cumples esta pequena profecia, acumulas mas evidencia de quien eres.
+                    </p>
+                </div>
+
+                <label class="reward-check">
+                    <input id="mark-rewarded" type="checkbox">
+                    <span>Me di una pequena recompensa o reconocimiento consciente. Recompensarte despues del habito hace mas probable repetirlo.</span>
+                </label>
+
+                <button type="submit" class="btn btn-success mt-lg">Marcar completado</button>
+            </form>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    document.getElementById('mark-day-form').addEventListener('submit', event => {
+        event.preventDefault();
+
+        const type = document.getElementById('mark-type').value;
+        if (!type) {
+            alert('Selecciona como practicaste.');
+            return;
+        }
+
+        const whyImportant = document.getElementById('mark-why-important').value.trim();
+        const actionToday = document.getElementById('mark-action-today').value.trim();
+        const actionTomorrow = document.getElementById('mark-action-tomorrow').value.trim();
+        const rewarded = document.getElementById('mark-rewarded').checked;
+
+        AppState.apply.ledger[todayStr] = {
+            type,
+            whyImportant,
+            actionToday,
+            actionTomorrow,
+            rewarded,
+            evidence: actionToday,
+            reward: rewarded ? 'Si' : '',
+            timestamp: Date.now()
+        };
+
+        recalculateDerivedState();
+        saveState();
+        closeApplyModal();
+        renderApplyScreen();
+
+        document.querySelectorAll('.progress-cell.today').forEach(cell => {
+            cell.classList.add('stamp');
+        });
+    });
+}
+
+function openRecoveryModal(forcedDate) {
+    const pendingRecoveryDate = forcedDate || getPendingRecoveryDate();
+    if (!pendingRecoveryDate) return;
+
+    const fearSetting = AppState.apply.identity.fearSetting;
+    const modal = document.getElementById('apply-modal');
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Antes de reiniciar tu racha</h3>
+                <button class="modal-close" onclick="closeApplyModal()">&times;</button>
+            </div>
+
+            <p class="text-muted mb-md">
+                Hubo un dia sin registro (${formatDateLong(pendingRecoveryDate)}). Antes de continuar,
+                recuerda por que vale la pena intentar esto y cual es el costo de dejarlo enfriarse.
+            </p>
+
+            <div class="card mb-lg">
+                <div class="label">Beneficios parciales de intentarlo</div>
+                <p style="margin: var(--sp-2) 0 0;">${escapeHtml(fearSetting.partialWins)}</p>
+            </div>
+
+            <div class="card mb-lg">
+                <div class="label">Costo de no actuar</div>
+                <div class="belief-item"><strong>6 meses:</strong> ${escapeHtml(fearSetting.cost6Months)}</div>
+                <div class="belief-item"><strong>1 ano:</strong> ${escapeHtml(fearSetting.cost1Year)}</div>
+                <div class="belief-item"><strong>3 anos:</strong> ${escapeHtml(fearSetting.cost3Years)}</div>
+            </div>
+
+            <form id="recovery-form">
+                <label class="reward-check">
+                    <input id="recovery-ack" type="checkbox" required>
+                    <span>Ya lei esto y visualice tanto los beneficios de intentarlo como los costos de no actuar.</span>
+                </label>
+
+                <button type="submit" class="btn btn-primary mt-lg">Continuar y reiniciar conscientemente</button>
+            </form>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    document.getElementById('recovery-form').addEventListener('submit', event => {
+        event.preventDefault();
+
+        if (!document.getElementById('recovery-ack').checked) {
+            alert('Necesitas confirmar que lo leiste y lo visualizaste antes de continuar.');
+            return;
+        }
+
+        AppState.apply.recovery.lastAcknowledgedMissDate = pendingRecoveryDate;
+        saveState();
+        closeApplyModal();
+        renderApplyScreen();
+    });
+}
+
+function closeApplyModal() {
+    const modal = document.getElementById('apply-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.innerHTML = '';
+    }
+}
+
+function switchApplyTab(tabName) {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+    });
+
+    document.querySelectorAll('.apply-tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === 'apply-' + tabName);
+    });
+
+    if (tabName === 'dashboard') {
+        renderApplyScreen();
+    } else if (tabName === 'history') {
+        renderHistory();
+    }
+}
+
+function renderHistory() {
+    const container = document.getElementById('apply-history');
+    if (!container) return;
+
+    const entries = Object.entries(AppState.apply.ledger).sort((a, b) => b[0].localeCompare(a[0]));
+    const identity = AppState.apply.identity;
+
+    if (entries.length === 0) {
+        container.innerHTML = `
+            ${renderIdentitySummaryPanel('Tu identidad')}
+            <div class="card text-center">
+                <p class="text-muted">Aun no hay registros.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        ${renderIdentitySummaryPanel('Tu identidad')}
+
+        <div class="card mb-lg">
+            <h3 class="mb-md">Dreamline</h3>
+            <div class="belief-item"><strong>Tener:</strong> ${escapeHtml(identity.dreamline.have)}</div>
+            <div class="belief-item"><strong>Hacer:</strong> ${escapeHtml(identity.dreamline.do)}</div>
+            <div class="belief-item"><strong>Ser:</strong> ${escapeHtml(identity.dreamline.be)}</div>
+        </div>
+
+        <div class="card mb-lg">
+            <h3 class="mb-md">Fear-setting</h3>
+            <div class="belief-item"><strong>Que pasa si...?</strong> ${escapeHtml(identity.fearSetting.whatIf)}</div>
+            <div class="belief-item"><strong>Como prevenirlo:</strong> ${escapeHtml(identity.fearSetting.prevent)}</div>
+            <div class="belief-item"><strong>Como repararlo:</strong> ${escapeHtml(identity.fearSetting.repair)}</div>
+            <div class="belief-item"><strong>Beneficios parciales:</strong> ${escapeHtml(identity.fearSetting.partialWins)}</div>
+            <div class="belief-item"><strong>Costo en 6 meses:</strong> ${escapeHtml(identity.fearSetting.cost6Months)}</div>
+            <div class="belief-item"><strong>Costo en 1 ano:</strong> ${escapeHtml(identity.fearSetting.cost1Year)}</div>
+            <div class="belief-item"><strong>Costo en 3 anos:</strong> ${escapeHtml(identity.fearSetting.cost3Years)}</div>
+        </div>
+
+        ${entries.map(([date, entry]) => `
+            <div class="card mb-sm">
+                <div class="flex justify-between items-center mb-sm">
+                    <span class="label">${formatDate(date)}</span>
+                    <span class="badge">${renderEntryType(entry.type)}</span>
+                </div>
+                ${entry.whyImportant ? `<p style="margin: var(--sp-2) 0; font-size: var(--text-sm);"><strong>Por que es importante:</strong> ${escapeHtml(entry.whyImportant)}</p>` : ''}
+                ${entry.actionToday || entry.evidence ? `<p style="margin: var(--sp-2) 0; font-size: var(--text-sm);"><strong>Evidencia de hoy:</strong> ${escapeHtml(entry.actionToday || entry.evidence)}</p>` : ''}
+                ${entry.actionTomorrow ? `<p style="margin: var(--sp-2) 0; font-size: var(--text-sm);"><strong>Evidencia para manana:</strong> ${escapeHtml(entry.actionTomorrow)}</p>` : ''}
+                <p class="text-muted" style="font-size: var(--text-xs); margin-bottom: 0;">
+                    Recompensa: ${entry.rewarded || entry.reward ? 'Si' : 'No registrada'}
+                </p>
+            </div>
+        `).join('')}
+    `;
+}
+
+function renderIdentitySummaryPanel(label) {
+    const identity = AppState.apply.identity;
+
+    return `
+        <div class="identity-panel mt-md mb-lg">
+            <div class="label">${escapeHtml(label)}</div>
+            <p class="identity-sealed">"${escapeHtml(identity.name)}"</p>
+            <div class="belief-item"><strong>Quiero ser:</strong> ${escapeHtml(identity.dreamline.be)}</div>
+            <div class="belief-item"><strong>Beneficio parcial:</strong> ${escapeHtml(identity.fearSetting.partialWins)}</div>
+        </div>
+    `;
+}
+
+function renderConceptHelpLink(text) {
+    return `
+        <a href="${WINTERLAKE_CHATBOT_URL}" target="_blank" rel="noopener noreferrer" class="concept-help-link">
+            ${escapeHtml(text)} ->
+        </a>
+    `;
+}
+
+function renderRecoveryBlock(pendingRecoveryDate) {
+    return `
+        <div class="card mb-md recovery-card">
+            <div class="label">Reinicio consciente</div>
+            <p style="margin: var(--sp-2) 0;">
+                Falto registro el ${formatDateLong(pendingRecoveryDate)}. Antes de seguir, relee tus beneficios parciales
+                y tus costos de inaccion para reiniciar con claridad.
+            </p>
+            <button class="btn btn-secondary btn-sm" onclick="openRecoveryModal('${pendingRecoveryDate}')">
+                Leer y visualizar antes de continuar
+            </button>
+        </div>
+    `;
+}
+
+function renderMarkTypeOptions() {
+    if (AppState.apply.currentWeek === 1) {
+        return `
+            <option value="visualization">Solo visualizacion de la semana 1</option>
+            <option value="action">Visualizacion + accion extra</option>
+        `;
+    }
+
+    return `
+        <option value="visualization">Solo visualizacion</option>
+        <option value="action">Visualizacion + accion</option>
+    `;
+}
+
+function getCurrentPracticeGuide() {
+    const week = AppState.apply.currentWeek;
+    const habitDef = getCurrentHabitDefinition();
+
+    if (week === 1) {
+        return {
+            label: 'Semana 1: solo visualizacion',
+            summary: 'La primera pregunta es una visualizacion. Esta primera semana solo imaginas la practica, no necesitas exigir una accion perfecta todavia.',
+            details: 'La idea es preparar tu mente y tu identidad. Visualiza una escena sencilla: tu hijo muestra interes por algo, tu no lo frivolizas y respondes con curiosidad genuina.',
+            example: `Ejemplo: ${habitDef.example}`
+        };
+    }
+
+    if (week >= 2 && week <= 4) {
+        return {
+            label: 'Semana 2 en adelante: visualizacion + accion',
+            summary: 'Ahora sigues visualizando y ademas haces una accion concreta. Puede ser una pregunta simple o una observacion honesta sobre lo que interesa a tu hijo.',
+            details: 'En esta diada, la accion puede ser notar algo importante, preguntar con curiosidad real, apoyar una exploracion o simplemente no frivolizar lo que tu hijo comparte contigo.',
+            example: 'Ejemplo: "Veo que te importa mucho eso. Quieres mostrarme que descubriste?"'
+        };
+    }
+
+    return {
+        label: 'Habito consolidado: visualizacion + accion desde el inicio',
+        summary: 'En esta diada ya no hace falta una semana solo de visualizacion. Como vienes con base previa, aqui empiezas visualizando y actuando desde el principio.',
+        details: 'La logica es la misma: primero imaginas la mejor respuesta posible y luego haces una accion concreta y pequena en la vida real.',
+        example: `Ejemplo: ${habitDef.example}`
+    };
+}
+
+function getPendingRecoveryDate() {
+    const apply = AppState.apply;
+    if (!apply.startDate) return null;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const start = new Date(apply.startDate);
+    start.setHours(0, 0, 0, 0);
+
+    let cursor = new Date(start);
+    let latestMiss = null;
+
+    while (cursor < today) {
+        const position = getProgramPositionForDate(cursor);
+        if (!position || position.week > 12) break;
+
+        const dateStr = cursor.toISOString().split('T')[0];
+        const isRestDay = position.day === 7;
+
+        if (!isRestDay && !apply.ledger[dateStr]) {
+            latestMiss = dateStr;
+        }
+
+        cursor.setDate(cursor.getDate() + 1);
+    }
+
+    if (!latestMiss) return null;
+    if (apply.recovery.lastAcknowledgedMissDate === latestMiss) return null;
+
+    return latestMiss;
+}
+
+function getProgramPositionForDate(dateInput) {
+    const apply = AppState.apply;
+    if (!apply.startDate) return null;
+
+    const start = new Date(apply.startDate);
+    const date = new Date(dateInput);
+    start.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.floor((date - start) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return null;
+
+    const adjustedDays = diffDays + apply.startDayOffset;
+    return {
+        week: Math.floor(adjustedDays / 7) + 1,
+        day: (adjustedDays % 7) + 1
+    };
+}
+
+function renderEntryType(type) {
+    if (type === 'action') return 'Visualizacion + accion';
+    return 'Visualizacion';
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+function formatDateLong(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function updateApplyUI() { renderApplyScreen(); }
+function updateLogForm() {}
+function updateHistory() { renderHistory(); }
+function selectQuest() {}
+function selectWeek() {}
+function activateQuest() {}
+
+
+
+=== END FILE: .\js\apply.js ===
+
+
+=== BEGIN FILE: .\js\data.js ===
+
+// ===== QUEST DATA =====
+// File: js/data.js
+
+const QUESTS = {
+  'taking-seriously': {
+    id: 'taking-seriously',
+    title: 'ðŸŽ¯ Tomar en Serio',
+    dyad: 'DÃ­ada 1',
+    description: 'Cuando el niÃ±o exprese algo (problema, interÃ©s, emociÃ³n), pausa y explora en vez de minimizar.',
+    weeklyFocus: [
+      'Visualiza pausar cuando el niÃ±o hable. Imagina preguntar "Â¿QuÃ© hace esto importante para ti?"',
+      'Una vez al dÃ­a, cuando el niÃ±o exprese algo, pausa 3 segundos antes de responder.',
+      'Haz al menos una pregunta exploradora por dÃ­a: "CuÃ©ntame mÃ¡s" o "Â¿QuÃ© sientes?"',
+      'Integra el patrÃ³n naturalmente. Nota cuÃ¡ndo te sale espontÃ¡neamente.'
+    ],
+    rubric: {
+      paused: 'Â¿Pausaste antes de responder?',
+      explored: 'Â¿Hiciste preguntas exploratorias?',
+      honored: 'Â¿Trataste su expresiÃ³n como dato valioso?',
+      avoided_minimize: 'Â¿Evitaste minimizar o comparar?'
+    }
+  },
+  'adult-test': {
+    id: 'adult-test',
+    title: 'ðŸªž Prueba del Adulto',
+    dyad: 'DÃ­ada 2',
+    description: 'Antes de actuar hacia el niÃ±o, pregunta: "Â¿Le harÃ­a esto a un adulto que respeto?"',
+    weeklyFocus: [
+      'Visualiza situaciones tÃ­picas donde actÃºas hacia el niÃ±o. Imagina aplicar la prueba.',
+      'Una vez al dÃ­a, antes de una acciÃ³n, pausa y aplica la prueba mentalmente.',
+      'Cuando la prueba revele un "no", busca activamente una alternativa no-coercitiva.',
+      'La prueba se vuelve automÃ¡tica. Nota cuÃ¡ndo te detienes naturalmente.'
+    ],
+    rubric: {
+      applied_test: 'Â¿Aplicaste la prueba del adulto?',
+      found_alternative: 'Â¿Encontraste alternativa cuando era necesario?',
+      no_coercion: 'Â¿Evitaste coerciÃ³n, amenaza o vergÃ¼enza?',
+      respected: 'Â¿Trataste al niÃ±o como tratarÃ­as a un colega?'
+    }
+  },
+  'mythosophic-moment': {
+    id: 'mythosophic-moment',
+    title: 'âœ¨ Momento MitosÃ³fico',
+    dyad: 'DÃ­ada 3',
+    description: 'Conecta un interÃ©s autÃ©ntico del niÃ±o con una narrativa, sÃ­mbolo o ritual heroico.',
+    weeklyFocus: [
+      'Visualiza observar los intereses del niÃ±o. Imagina elementos narrativos que podrÃ­an enriquecerlos.',
+      'Identifica un interÃ©s autÃ©ntico. PropÃ³n un pequeÃ±o elemento mÃ­tico (nombre, sÃ­mbolo, historia).',
+      'Co-crea con el niÃ±o: pregunta cÃ³mo quiere nombrar o ritualizar algo que le importa.',
+      'Los elementos mitosÃ³ficos surgen naturalmente de la conversaciÃ³n y el juego.'
+    ],
+    rubric: {
+      identified_interest: 'Â¿Identificaste un interÃ©s autÃ©ntico (no impuesto)?',
+      added_narrative: 'Â¿Propusiste o co-creaste un elemento narrativo/simbÃ³lico?',
+      child_led: 'Â¿Dejaste que el niÃ±o guiara la mitificaciÃ³n?',
+      no_forcing: 'Â¿Evitaste usar mito para forzar cumplimiento?'
+    }
+  },
+  'provisionalismo-check': {
+    id: 'provisionalismo-check',
+    title: 'ðŸ”„ Chequeo Provisionalista',
+    dyad: 'Pilar',
+    description: 'Identifica una regla o expectativa y pregunta: "Â¿QuÃ© problema resuelve realmente?"',
+    weeklyFocus: [
+      'Visualiza examinar tus reglas y expectativas habituales. Imagina cuestionarlas gentilmente.',
+      'Elige una regla de tu hogar. Escribe quÃ© problema supuestamente resuelve.',
+      'Pregunta: Â¿realmente lo resuelve? Â¿Hay una forma mejor? Â¿Es provisional o sagrada?',
+      'El chequeo provisionalista se vuelve un hÃ¡bito mental ante cualquier "debe".'
+    ],
+    rubric: {
+      identified_rule: 'Â¿Identificaste una regla especÃ­fica?',
+      questioned_problem: 'Â¿Examinaste quÃ© problema resuelve?',
+      considered_alternatives: 'Â¿Consideraste alternativas?',
+      open_to_change: 'Â¿EstÃ¡s dispuesto/a a cambiar si hay algo mejor?'
+    }
+  }
+};
+
+
+=== END FILE: .\js\data.js ===
+
+
+=== BEGIN FILE: .\js\feedback.js ===
+
+// ===== FEEDBACK GENERATION =====
+// File: js/feedback.js
+
+function generateFeedback(log) {
+    const quest = QUESTS[log.questId];
+    const week = log.week;
+
+    let positives = [];
+    let improvements = [];
+    let nextStep = '';
+
+    // Analyze trigger
+    if (log.trigger === 'yes-full') {
+        positives.push({
+            text: 'Excelente trabajo con el disparador de estado. Activar tu cuerpo antes de la prÃ¡ctica ayuda a crear asociaciones fuertes.',
+            principle: 'Principio Winterlake: El estado precede a la acciÃ³n efectiva.'
+        });
+    } else if (log.trigger === 'yes-partial') {
+        positives.push({
+            text: 'Buen intento con el disparador. Incluso una versiÃ³n parcial ayuda.',
+            principle: null
+        });
+        improvements.push({
+            text: 'Intenta un disparador mÃ¡s corto pero completo (3 respiraciones profundas, 10 segundos de movimiento).',
+            principle: 'Haz lo mÃ­nimo, pero hazlo completo.'
+        });
+    } else {
+        improvements.push({
+            text: 'El disparador de estado es clave para crear el hÃ¡bito. MaÃ±ana, comienza con solo 3 respiraciones profundas.',
+            principle: 'Sin activaciÃ³n corporal, la visualizaciÃ³n es solo pensamiento.'
+        });
+    }
+
+    // Analyze visualization
+    if (log.visualization === 'vivid') {
+        positives.push({
+            text: 'VisualizaciÃ³n vÃ­vida completada. Tu cerebro estÃ¡ creando los patrones neurales como si la prÃ¡ctica ya hubiera ocurrido.',
+            principle: 'La visualizaciÃ³n prepara la identidad antes de la acciÃ³n.'
+        });
+    } else if (log.visualization === 'brief') {
+        positives.push({
+            text: 'Visualizaste brevemente. Cada segundo cuenta.',
+            principle: null
+        });
+        improvements.push({
+            text: 'AÃ±ade detalles sensoriales: Â¿quÃ© ves, oyes, sientes cuando practicas exitosamente?',
+            principle: 'La riqueza sensorial aumenta el impacto.'
+        });
+    } else {
+        improvements.push({
+            text: 'La visualizaciÃ³n es el corazÃ³n de la Semana 1. MaÃ±ana, cierra los ojos 30 segundos e imagina una sola escena de Ã©xito.',
+            principle: 'Sin visualizaciÃ³n, el hÃ¡bito no tiene ancla mental.'
+        });
+    }
+
+    // Analyze action (if applicable)
+    if (week >= 2) {
+        if (log.action === 'yes-full') {
+            positives.push({
+                text: 'Â¡AcciÃ³n completa! EstÃ¡s construyendo evidencia sÃ³lida de tu identidad Winterlake.',
+                principle: 'Cada acciÃ³n es prueba de quiÃ©n eres.'
+            });
+        } else if (log.action === 'yes-minimal') {
+            positives.push({
+                text: 'Perfecto: versiÃ³n mÃ­nima ejecutada. La consistencia importa mÃ¡s que la intensidad.',
+                principle: 'Atomic Habits: hazlo pequeÃ±o, hazlo consistente.'
+            });
+        } else if (log.action === 'week1-vis-only' || log.action === 'no') {
+            if (week >= 2) {
+                improvements.push({
+                    text: 'Esta semana incluye acciÃ³n. MaÃ±ana, intenta la versiÃ³n mÃ¡s pequeÃ±a posible de la prÃ¡ctica.',
+                    principle: 'Semana ' + week + ' = visualizar + hacer (aunque sea mÃ­nimo).'
+                });
+            }
+        }
+    }
+
+    // Analyze reward
+    if (log.reward === 'no') {
+        improvements.push({
+            text: 'No olvides la recompensa. Tu cerebro necesita el cierre positivo para anclar el hÃ¡bito.',
+            principle: 'La recompensa sella el circuito: disparador â†’ acciÃ³n â†’ recompensa.'
+        });
+    } else {
+        positives.push({
+            text: 'Te recompensaste. Esto refuerza todo el ciclo del hÃ¡bito.',
+            principle: null
+        });
+    }
+
+    // Identity feedback
+    if (log.identity && log.identity.trim()) {
+        positives.push({
+            text: `ReflexiÃ³n de identidad registrada: "${log.identity}". Esta evidencia acumulada construye tu narrativa Winterlake.`,
+            principle: 'La identidad se construye con evidencia, no con deseos.'
+        });
+    } else {
+        improvements.push({
+            text: 'La prÃ³xima vez, completa la reflexiÃ³n de identidad. Es la parte mÃ¡s poderosa del proceso.',
+            principle: 'Sin reflexiÃ³n, la prÃ¡ctica es solo conducta. Con reflexiÃ³n, es transformaciÃ³n.'
+        });
+    }
+
+    // Quest-specific feedback
+    if (quest) {
+        const questFeedback = getQuestSpecificFeedback(quest.id, log);
+        if (questFeedback.positive) {
+            positives.push(questFeedback.positive);
+        }
+        if (questFeedback.improvement) {
+            improvements.push(questFeedback.improvement);
+        }
+    }
+
+    // Determine next step
+    if (week < 4) {
+        if (positives.length >= 3 && improvements.length <= 1) {
+            nextStep = `EstÃ¡s listo/a para avanzar a Semana ${week + 1} si sientes que la prÃ¡ctica actual es sÃ³lida.`;
+        } else {
+            nextStep = `ContinÃºa con Semana ${week}. La maestrÃ­a viene de la repeticiÃ³n consciente.`;
+        }
+    } else {
+        nextStep = `Excelente. En la Semana 4, estÃ¡s estabilizando tu nueva naturaleza Winterlake.`;
+    }
+
+    // Render feedback
+    const feedbackContent = document.getElementById('feedback-content');
+    feedbackContent.innerHTML = `
+    <div class="card card-highlight mb-lg">
+      <h3 class="mb-sm">Lo que hiciste bien</h3>
+      ${positives.map(p => `
+        <div class="feedback-item">
+          <div class="feedback-icon positive">âœ“</div>
+          <div>
+            <p style="margin: 0;">${p.text}</p>
+            ${p.principle ? `<small class="text-muted" style="display:block; margin-top:4px;">ðŸ’¡ ${p.principle}</small>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    ${improvements.length > 0 ? `
+      <div class="card mb-lg" style="border-left: 4px solid var(--color-warning);">
+        <h3 class="mb-sm">Para mejorar la prÃ³xima vez</h3>
+        ${improvements.map(i => `
+          <div class="feedback-item">
+            <div class="feedback-icon improve">â†—</div>
+            <div>
+              <p style="margin: 0;">${i.text}</p>
+              ${i.principle ? `<small class="text-muted" style="display:block; margin-top:4px;">ðŸ’¡ ${i.principle}</small>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+    
+    <div class="card" style="background: var(--color-bg);">
+      <h3 class="mb-sm">Siguiente Paso</h3>
+      <p>${nextStep}</p>
+    </div>
+  `;
+
+    navigateTo('feedback');
+}
+
+function getQuestSpecificFeedback(questId, log) {
+    const desc = (log.description || '').toLowerCase();
+
+    if (questId === 'taking-seriously') {
+        if (desc.includes('escuch') || desc.includes('pregunta') || desc.includes('pausa')) {
+            return {
+                positive: { text: 'Tu descripciÃ³n indica escucha activa. Has evitado la frivolizaciÃ³n.', principle: 'DÃ­ada 1: Tomar en Serio.' },
+                improvement: null
+            };
+        }
+    }
+
+    if (questId === 'adult-test') {
+        if (desc.includes('no lo hice') || desc.includes('detuve')) {
+            return {
+                positive: { text: 'Detener una acciÃ³n coercitiva es un gran Ã©xito. Has pasado la prueba del adulto.', principle: 'DÃ­ada 2: No-CoerciÃ³n.' },
+                improvement: null
+            };
+        }
+    }
+
+    if (questId === 'mythosophic-moment') {
+        if (desc.includes('historia') || desc.includes('juego') || desc.includes('personaje')) {
+            return {
+                positive: { text: 'Has introducido elementos narrativos. EstÃ¡s construyendo significado compartido.', principle: 'DÃ­ada 3: MitosofÃ­a.' },
+                improvement: null
+            };
+        }
+    }
+
+    return { positive: null, improvement: null };
+}
+
+
+=== END FILE: .\js\feedback.js ===
+
+
+=== BEGIN FILE: .\js\forms.js ===
+
+// ===== FORM HANDLING =====
+// File: js/forms.js
+
+window.addEventListener('DOMContentLoaded', () => {
+    const dailyLogForm = document.getElementById('daily-log-form');
+    if (dailyLogForm) {
+        dailyLogForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const log = {
+                questId: AppState.apply.selectedQuest,
+                week: AppState.apply.selectedWeek,
+                date: new Date().toISOString(),
+                trigger: document.getElementById('log-trigger').value,
+                visualization: document.getElementById('log-visualization').value,
+                action: document.getElementById('log-action').value || 'week1-vis-only',
+                reward: document.getElementById('log-reward').value,
+                description: document.getElementById('log-description').value,
+                identity: document.getElementById('log-identity').value
+            };
+
+            // Save log
+            AppState.apply.logs.push(log);
+
+            // Update streak
+            AppState.apply.streak = calculateStreak();
+
+            saveState();
+
+            // Generate and show feedback
+            if (typeof generateFeedback === 'function') {
+                generateFeedback(log);
+            }
+
+            // Reset form
+            this.reset();
+        });
+    }
+});
+
+
+=== END FILE: .\js\forms.js ===
+
+
+=== BEGIN FILE: .\js\learn.js ===
+
+// ===== LEARN MODE =====
+// File: js/learn.js
+
+function markSectionComplete(section) {
+    AppState.learnProgress[section] = true;
+    saveState();
+
+    // Update nav item
+    const navItem = document.querySelector(`[data-section="${section}"]`);
+    if (navItem) {
+        navItem.classList.add('completed');
+    }
+}
+
+function toggleModule(element, moduleId) {
+    element.classList.toggle('checked');
+    AppState.learnProgress.modules[moduleId] = element.classList.contains('checked');
+
+    if (element.classList.contains('checked')) {
+        element.querySelector('.rubric-checkbox').innerHTML = 'âœ“';
+    } else {
+        element.querySelector('.rubric-checkbox').innerHTML = '';
+    }
+
+    saveState();
+}
+
+
+=== END FILE: .\js\learn.js ===
+
+
+=== BEGIN FILE: .\js\navigation.js ===
+
+// ===== NAVIGATION =====
+// File: js/navigation.js
+
+function navigateTo(screenId) {
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    // Show target screen
+    const target = document.getElementById('screen-' + screenId);
+    if (target) {
+        target.classList.add('active');
+        AppState.currentScreen = screenId;
+        window.scrollTo(0, 0);
+
+        // Update UI based on screen
+        if (screenId === 'apply-menu' && typeof initApplyMode === 'function') {
+            initApplyMode();
+        }
+    }
+}
+
+function scrollToSection(sectionId) {
+    switchLearnTab(sectionId);
+}
+
+function switchLearnTab(sectionId) {
+    const section = document.getElementById('section-' + sectionId);
+
+    document.querySelectorAll('#screen-learn-menu .section-nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.section === sectionId);
+    });
+
+    document.querySelectorAll('#screen-learn-menu .learn-tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === 'section-' + sectionId);
+    });
+
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+
+=== END FILE: .\js\navigation.js ===
+
+
+=== BEGIN FILE: .\js\state.js ===
+
+// ===== STATE MANAGEMENT =====
+// File: js/state.js
+
+const STORAGE_KEY = 'winterlake-state-v2';
+
+function createDefaultIdentityState() {
+    return {
+        name: '',
+        beliefs: ['', ''],
+        dreamline: {
+            have: '',
+            do: '',
+            be: ''
+        },
+        fearSetting: {
+            whatIf: '',
+            prevent: '',
+            repair: '',
+            partialWins: '',
+            cost6Months: '',
+            cost1Year: '',
+            cost3Years: ''
+        },
+        sealed: false,
+        sealedAt: null
+    };
+}
+
+function createDefaultApplyState() {
+    return {
+        identity: createDefaultIdentityState(),
+        startDate: null,
+        startDayOffset: 0,
+        habits: {
+            week1to4: {
+                visualization: '',
+                action: '',
+                unlocked: true
+            },
+            week5to8: {
+                visualization: '',
+                action: '',
+                unlocked: false
+            },
+            week9to12: {
+                visualization: '',
+                action: '',
+                unlocked: false
+            }
+        },
+        ledger: {},
+        recovery: {
+            lastAcknowledgedMissDate: null
+        },
+        currentWeek: 1,
+        currentDay: 1,
+        streak: 0
+    };
+}
+
+const AppState = {
+    currentScreen: 'home',
+    theme: 'light',
+    learnProgress: {
+        unlearn: false,
+        map: false,
+        modules: {}
+    },
+    apply: createDefaultApplyState()
+};
+
+function mergeIdentityState(source) {
+    const defaults = createDefaultIdentityState();
+    const identity = source || {};
+
+    return {
+        ...defaults,
+        ...identity,
+        beliefs: Array.isArray(identity.beliefs)
+            ? [identity.beliefs[0] || '', identity.beliefs[1] || '']
+            : defaults.beliefs,
+        dreamline: {
+            ...defaults.dreamline,
+            ...(identity.dreamline || {})
+        },
+        fearSetting: {
+            ...defaults.fearSetting,
+            ...(identity.fearSetting || {})
+        }
+    };
+}
+
+function mergeApplyState(source) {
+    const defaults = createDefaultApplyState();
+    const apply = source || {};
+
+    return {
+        ...defaults,
+        ...apply,
+        identity: mergeIdentityState(apply.identity),
+        habits: {
+            ...defaults.habits,
+            ...(apply.habits || {})
+        },
+        recovery: {
+            ...defaults.recovery,
+            ...(apply.recovery || {})
+        },
+        ledger: apply.ledger || {}
+    };
+}
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            AppState.apply = mergeApplyState(parsed.apply);
+            AppState.learnProgress = {
+                ...AppState.learnProgress,
+                ...(parsed.learnProgress || {})
+            };
+            if (parsed.theme) AppState.theme = parsed.theme;
+            if (parsed.currentScreen) AppState.currentScreen = parsed.currentScreen;
+        }
+    } catch (e) {
+        console.warn('[Winterlake] Failed to load state:', e);
+    }
+
+    recalculateDerivedState();
+
+    if (typeof updateUI === 'function') updateUI();
+}
+
+function saveState() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            currentScreen: AppState.currentScreen,
+            theme: AppState.theme,
+            learnProgress: AppState.learnProgress,
+            apply: AppState.apply
+        }));
+    } catch (e) {
+        console.warn('[Winterlake] Failed to save state:', e);
+    }
+}
+
+function recalculateDerivedState() {
+    const apply = AppState.apply;
+
+    if (!apply.startDate) {
+        apply.currentWeek = 1;
+        apply.currentDay = 1;
+        apply.streak = 0;
+        return;
+    }
+
+    const start = new Date(apply.startDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+
+    const daysSinceStart = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    const adjustedDays = daysSinceStart + apply.startDayOffset;
+
+    apply.currentWeek = Math.floor(adjustedDays / 7) + 1;
+    apply.currentDay = (adjustedDays % 7) + 1;
+
+    if (apply.currentWeek < 1) {
+        apply.currentWeek = 1;
+        apply.currentDay = 1;
+    }
+
+    if (apply.currentWeek > 12) apply.currentWeek = 12;
+
+    if (apply.currentWeek >= 5) apply.habits.week5to8.unlocked = true;
+    if (apply.currentWeek >= 9) apply.habits.week9to12.unlocked = true;
+
+    apply.streak = calculateStreak();
+}
+
+function calculateStreak() {
+    const ledger = AppState.apply.ledger;
+    const entries = Object.keys(ledger).sort().reverse();
+
+    if (entries.length === 0) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
+
+    let streak = 0;
+    let checkDate = new Date(today);
+
+    if (ledger[todayStr]) {
+        streak = 1;
+        checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+        checkDate.setDate(checkDate.getDate() - 1);
+        const yesterdayStr = checkDate.toISOString().split('T')[0];
+        if (ledger[yesterdayStr]) {
+            streak = 1;
+            checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+            return 0;
+        }
+    }
+
+    while (true) {
+        const dateStr = checkDate.toISOString().split('T')[0];
+        if (ledger[dateStr]) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+            break;
+        }
+
+        if (streak > 365) break;
+    }
+
+    return streak;
+}
+
+function resetApplyState() {
+    if (!confirm('Resetear todo el progreso de Aplicar? Esta accion no se puede deshacer.')) {
+        return false;
+    }
+
+    AppState.apply = createDefaultApplyState();
+    saveState();
+    return true;
+}
+
+const HABIT_DEFINITIONS = {
+    week1to4: {
+        id: 'week1to4',
+        dyad: 'Diada 1: Frivolizacion -> Tomar en serio',
+        title: 'Tomar en serio',
+        description: 'Cuando tu hijo o hija exprese algo importante, en vez de minimizarlo, pausar y mostrar curiosidad real.',
+        promptVisualization: 'Como te imaginas pausar, escuchar y hacer una pregunta genuina?',
+        promptAction: 'Desde la semana 2, que accion minima haras para mostrar curiosidad real?',
+        example: 'Ejemplo: "Veo que eso te importa. Que te llama la atencion de eso?"',
+        weekRange: '1-4'
+    },
+    week5to8: {
+        id: 'week5to8',
+        dyad: 'Diada 2: Coercion -> No coercion',
+        title: 'No coercion creativa',
+        description: 'Buscar soluciones creativas sin amenazas, culpa, castigo ni retiro emocional.',
+        promptVisualization: 'Como te visualizas eligiendo una opcion respetuosa en vez de imponer?',
+        promptAction: 'Que accion concreta hara visible esa no coercion en tu casa?',
+        example: 'Ejemplo: cambiar "porque yo lo digo" por "veamos juntos una salida que funcione para ambos".',
+        weekRange: '5-8'
+    },
+    week9to12: {
+        id: 'week9to12',
+        dyad: 'Diada 3: Desgaste -> Ritualizacion',
+        title: 'Ritualizacion con significado',
+        description: 'Tomar una rutina comun y darle sentido, juego o narrativa sin volverla una imposicion.',
+        promptVisualization: 'Como imaginas convertir una rutina en un momento con significado?',
+        promptAction: 'Que micro ritual haras para apoyar un interes autentico?',
+        example: 'Ejemplo: si le interesan los insectos, salir a observarlos juntos y nombrar ese momento como una mision especial.',
+        weekRange: '9-12'
+    }
+};
+
+function getCurrentHabitDefinition() {
+    const week = AppState.apply.currentWeek;
+    if (week <= 4) return HABIT_DEFINITIONS.week1to4;
+    if (week <= 8) return HABIT_DEFINITIONS.week5to8;
+    return HABIT_DEFINITIONS.week9to12;
+}
+
+function getCurrentHabitKey() {
+    const week = AppState.apply.currentWeek;
+    if (week <= 4) return 'week1to4';
+    if (week <= 8) return 'week5to8';
+    return 'week9to12';
+}
+
+
+
+=== END FILE: .\js\state.js ===
+
+
+
+END QUEST WINTERLAKE
+
+BRIDGECRUX NOTES
+
+	* bridgecrux notes
+	  * file system structure (bridgecrux plus) as a smart-router (similar to index-md & agents-md) that is self-recursive (feedback loop, auto-update -erase/write- of the index-md similar to specific codebases compacted notes in agents-md in bridgecode) & that is llm/harness corrected (as bridgecode backend, frontend, user-llm-interaction)
+	     * Create a tool that the bridgecrux agents can use to inform the CUA bridgeclaw agent about a problem so it can try to fix it by himself without human intervention (before escalating). Can be through telegram or telegram like api behavior?  
+	  * not extensive text nor extensive files, but the opposite, compacted files (number of files), compacted text (quantity of text); in the agents.md (coding) or assistants.md (cruxes) there should be a smart-routing guide (with the route and compacted description so the agents knows when to use what) and coding/cruxes general constitution of errors to avoid, and specific error-correction notes (through crux reports) for the specific repo/crux_app. 
+		* compactation should be caveman formality for agents (that is designed so it can be decompressed by the agent; agents or asisstant md files should have the explanation of what is agentic caveman formality, and how to decompress it)
+		* one file with perspective/task, smart-routing and general & specific constitution
+		* as few files as possibles, all of them compacted with agentic caveman formality
+		* for coding the main file is agents.md and it routes to skills with the skills format (but prefer compacting everything into a single skill.md file)
+		* for cruxes the main file is assistant.md and it routes to knowledge folder with skill-equivalent files but compacted to a single file
+
+	  * from bridgecode lfe principles for agents-md to assistants-md lfa (a = agentic)
+		* while lfe backend/knowledge-limits principles goes around using the memorized stack and the most transparent stack, lfa sua_tool-call/knowledge should stablish as an starting point that the knowledge of the software being coordinated by the agent is unique, nevertheless, the agent, can make analogies as to what it looks like from its memorized data to understand it and operate it more efficaciously (effectively and efficiently) and the knowledge about the software the agent is coordinating should be complete (every little backend function and frontend section should be given to the agent as system prompt, and referenced in the assistants-md lfa tool-call/knowledge principle)
+		* while lfe frontend/overfitting principles are about avoiding memorized sloppish patterns and replace it with a space of possibility that is non-slop, lfa {WHAT OVERFITTING FOR AGENTS NEEDS TO BE REDUCED-ELIMINATED???}
+		* while lfe acting/interacting/hard-walls-circumventing or eye principles are about outlining clear processflows of effective-efficient actions, recursive improvement, escalating to human and good practices in general, lfa tutor is all about finding how to use the software and tools to achieve what the user needs (uncovering their real needs if they want something but can't state what they need to get there) (also if failing once, as in eye, it should create a loop-breaker creating instruct-like questions, 2 high leverage questions to the user, if after such questions the goal isn't achieved, then escalation is needed and a report will be sent to the bridgeclaw in charge of this crux). 
+
+	  * Concrete tools
+		* Compactation, caveprompts syntax explanation in caveprompt style in system prompt
+		* system prompt [harness] with the complete knowledge about the software it will be operating and the tools available (after the caveprompt syntax has been explained)
+		* assistants-md with the agentic tutor perspective and task of helping the user achieve his goals based on his needs and communicating and showcasing that his goals have been achieved. 
+		  * create the tutor perspective with an improvement of the universal perspective emulator as sk-perspectives-emulator on incantation prompt with the sk-anti-probabilistic_pers on pre-prompts
+		* assistants-md with the smart router section with the folder/method where the files are, the brief description (same brief description on each file as yaml frontmatter as with skills) and the criteria of when to use each file (circunstantial files, and memory files -inserted once at the beginning of all new conversations-). 
+		* assistants-md with the general constitutions (lfa-tool-use, lfa-tutor) and specific constitution (SUA common-errors and their corrections)
+		* file system structure: general tool-use (simple tools all in one file, general-functions-md) and specific complex tool use in specific-functions folder ([specific-function]-md)
+	
+
+	* bridgecrux pre principles
+	  * this should be based on agentic problems/limits
+	    * [Bridgeclaw problem]so far it seems one common problem is excess of skills, so anything that the agent can solve with an incantation, a jst or a full prompt don't require a full md file (what are the user's goals, and based on that, eliminate or don't list skills or plugins or channels that aren't necessary and only list in the bridgeclaw smart router those that will help the user)
+	  * another problem seems to be the routing (which should use research and instruct like principles if there's too much ambiguity to ask only high leverage questions, one or two, no more, to decide the best path)
+	    * routing per se should be covered by system-prompt/harness and assistants-md smart router section; intention-discovery (initial routing definition) should use base BESTANSWER caveprompt embedded in lfa-tutor and only ask questions after the user rejects the interpretation of his needs, questions should be 2 high leverage instruct-like questions . 
+		* Use bestanswer caveprompt along the research flow to create a upgraded research skill
+	  * ...
+
+	* bridgecrux, bridgeclaw, openclaw, and hermes-agent, reflections and hard walls
+	  * hard walls of LLMs-Agents (i.e. an LLM with a harness)
+	    * context window (partially solved -p.so.- with compactation), knowledge cut-off (p.so. with web-search and web-browser cua), hallucinations/overfitting/low-aura (idem as cutoff).
+	    * bridgeclaw solutions are more along the lines of perfecting how to use the harness that uses CUA so it doesn't break anything and is resourceful (hermes-agent seems to be the application of this principle to openclaw, but still, hermes would still need that, and a local agent like codex is still much better, so until a harness is not usable by itself, bridgeclaw and bridgeclaw like product/services makes no sense)
+	    * bridgecrux solves the harness problems by replacing CUA for SUA (Software-use-agent), and making it specific, thus:
+		* Smart router: one single file injected at every turn (same as system prompt) called assistant.md that has all the basic info about llm-role/perspective, core tasks, input, outputs and notes (error-corrections) [monoprompting into a single compacted section, no more than 1k tokens], then a smart router system that tells it which files will always be injected in the first turn as they are quintessential memories, which files to use for which type of problems so it can solve them by invoking those files only when necessary, such files should have either prompts/skills for llm-use and tool use, and a compacted description of each file, all of their contents in single lines compacted descriptions [no more than 1k neither]. 
+		* SUA: lfe-backend here is not 'use what you know before cutoff' but use your knowledge to use this software as an agent-assistant [monoprompting section on smart router assistant.md file] and only this software, that's your only job and role. 
+		* EYE-crux: A file within the smart-router system that whenever an error happens it should be reported, processed by the assistant and sent to the devs (which can be bridgeclaws that can escalate to humans) so they either fix the code or add a compacted note to the assistants.md or any other file from the smart router file system. 
+		  * Crucible: It's basically an EYE on steroids that uses the smartest orchestrator, super loop breaker (isolation) and ensambles (sub-agents isolations -> evaluation of solutions -> best solution selection) to find out the best solution autonomously in the least amount of tokens/turns possible before scalating to human
+		* Synthetic-memory (SynMem): A file/db (to be defined) that is loaded at the beginning of each new conversation with an user to generate the sensation of memorization by the LLM; also a bootstrap deterministic process where code asks predetermined high-leverage questions, and the first memory file is created. 
+		* Coding principles abstracted
+		  * RESEARCH-INSTRUCT-LIRA: While these tools are not necessarily useful for every software, its abstraction could be, specially when questions needs to be asked to the user to perform the right output through the right input, i.e. INSTRUCT-crux, besides that, everything else seems highly unnecesary. And through many interactions, many common mistakes can be addressed and set up as notes within the smart router. 
+
+END BRIDGECRUX NOTES
+
+
+
+
+ARQUEIDENTIDAD
+# **Arqueidentidad — Introducción**
+
+**Objetivo de este documento.** Presentar, de forma clara el mapa de **Arqueidentidad** en **seis fases** (I–VI). Para cada fase se explica **propósito**, **cómo funciona**, **técnicas o conceptos clave** y **por qué existe**.
+
+---
+
+## **Mapa general de las seis fases**
+
+* **Fase I — Pre‑Tummoidentidad (Arquemétricas).**  
+   Identificamos tu rol arquetípico con **arquemétricas†** y lo resumimos en una **“tarjeta de béisbol”**: qué se te da mejor, qué se te dificulta y qué errores son probables.
+
+* **Fase II — Tummoidentidad I (Descubrimiento por Resonancias).**  
+   **Tummo†** te prepara para **variar y seleccionar interpretaciones e identidades (conjuntos de interpretaciones y comportamientos)**. Exploramos los conceptos de **esferas y capas de resonancia†** y el **ciclo emocional†** para formular una **primera identidad heróica**.
+
+* **Fase III — Interpretaciones Espontáneas y Controladas.** Probamos tu **héroe** con interpretaciones **espontáneas** (dionisíacas) y **controladas** (apolodionisíacas) en las cuatro esferas, y **ajustamos** el ciclo emocional con lo que mejor funcione.
+
+* **Fase IV — Tummoidentidad II (Compresión & Microtemáticas).**  
+   Refinamos el héroe y **comprimimos** técnicas (cambio de estado, meditación-concentración, journaling y visualización) para intervenir **microtemáticas†**: pequeños hábitos o creencias que mueven la **macro-vida**.
+
+* **Fase V — Interpretaciones de Inmunización.**  
+   **Subimos** de forma segura miedo/aversión para hacer **pruebas de estrés** en las cuatro esferas y consolidar **inmunización** frente a disonancias.
+
+* **Fase VI — Reto Final.**  
+   **Llevamos al límite** el control de interpretaciones para **máxima inmunización apolínea** y, luego, **liberamos** en **espontaneidad dionisíaca**.
+
+*Los términos marcados con † aparecerán ampliados en glosario/notas al pie.*
+
+---
+
+## **Fase I — Pre‑Tummoidentidad (Arquemétricas)**
+
+### **Propósito**
+
+**Arqueidentidad I** es un proceso llamado **arquemétricas** que genera, como resultado, una **“tarjeta de béisbol”** de la persona: su **rol arquetípico** y cómo esto determina **fortalezas** y **debilidades** de su **temperamento**.
+
+### **Cómo funciona**
+
+1. **Arquemétricas**: se identifican **rasgos** y **tendencias** que ubican a la persona dentro de **roles** y **dinámicas** arquetípicas.
+
+2. **Tarjeta tipo béisbol**: ficha sintética con **rol**, **sub‑rasgos**, **fortalezas**, **debilidades** y **errores comunes** asociados.
+
+3. **Lectura temperamental**: se clarifica **cómo** el rol orienta decisiones, sesgos y acciones.
+
+### **Técnicas y conceptos en esta fase**
+
+* **Arquetipos comunes y errores (versiones luminosas y sombrías).**
+
+  * **Rey / Esclavo**, **Egoísta / Místico** → **dinámicas generales**.
+
+  * **Rigurosos / Rígidos / Ambiguos**, **Espontáneos / Inestables / Sobre‑complejidad** → **dinámicas específicas** ( ligadas a **cajas blancas** y **cajas negras)**.
+
+* **Cuatro roles arquetípicos (con cara luminosa y sombra):**
+
+  * **Shapers (Modeladores):** *Innovadores / Revolucionistas*.
+
+  * **Harmonists (Armonizadores):** *Negociadores / Preservacionistas*.
+
+  * **Strategists (Estrategas):** *Visionarios / Sobre-pensadores*.
+
+  * **Workers (Hacedores/Constructores):** *Constructures / Sub-pensadores*.
+
+**Nota sobre “cajas blancas / cajas negras”.** Se refiere a dinámicas de **apolíneo/dionisiaco** en procesos personales; su uso se detalla cuando corresponda a la selección de interpretaciones.
+
+### **Por qué existe esta fase**
+
+Para **nombrar** el **rol temperamental** y **anticipar** sus **errores típicos**; sirve de **base** para todo el trabajo posterior de variación y selección de interpretaciones e identidades.
+
+---
+
+## **Fase II — Tummoidentidad I (Descubrimiento por Resonancias)**
+
+### **Propósito**
+
+**Tummoidentidad I** es la **preparación teórica** para la **variación** y **selección de interpretaciones/identidades** de una **persona** en función de **resonancias**. Su fin es **incrementar** los **redes de interés y anti‑interés** y **crear un conjunto de identidades** a partir de interpretaciones que **resuenan más** con la persona.
+
+### **Cómo funciona**
+
+1. **Descubrimiento**: exploración de **esferas de resonancia** mediante **capas de resonancia**.
+
+   * Esferas de resonancia: Eventos externos (percepción), eventos internos (interocepción) y eventos temperamentales (subconsciente). 
+
+   * Capas de resonancia: Interpretaciónes físicas y psíquicas (quantia y qualia) y feedback subconsciente. 
+
+2. **Modelado del ciclo emocional** para observar cómo cambian interés/anti‑interés según interpretaciones. 
+
+3. **Primera conjetura de héroe/identidad**: se formula un **set de interpretaciones**, con **hypnos (hipnosis-reinterpretativa)**, **quest (identidades, habitos y creencias)**, **errores que el héroe no comete** y **comportamientos‑creencias** que sí tiene/hace.
+
+4. **Principio de encarnación**: *“un héroe que podemos imaginar es un héroe que podemos instanciar en la vida cotidiana”.*
+
+### **Técnicas y conceptos en esta fase**
+
+* **Ciclos emocionales y resonancias/dissonancias; red de interés/anti‑interés.**
+
+  * **Ciclo emocional:** `evento (quantia o qualia) → interpretación → deseo (feedback de inclinación) → acción → emoción (feedback de afinidad) → resultado/re‑start (resonancia o disonancia)`.
+
+  * **Resultado/re‑start (feedback):**
+
+    * *Buen feedback (a corto y largo plazo) \=* resonancia. 
+
+    * *Mal feedback* \= disonancia (a corto y largo plazo), auto-regulación (a largo plazo) o re-interpretación (a corto plazo).
+
+  * **Resultado/re‑start (interpretación):**
+
+    * **aceptación‑reinterpretación o negación‑negativización** (exploración o imposición) → **creación‑construcción / auto‑destrucción** (diálogo interno de armonía o de conflicto).
+
+* **Héroe (tummoidentidad, de héroe a héroe).**
+
+  * **Primera conjetura** del **héroe/identidad** (set de interpretaciones), **hypnos**, **quest**, **errores que el héroe no comete** y **comportamientos‑creencias** que sí tiene/hace.
+
+### **Por qué existe esta fase**
+
+Para **mapear** cómo **interpretaciones** específicas **modulan** deseos, acciones, emociones y resultados; y para **fundar** una **identidad‑héroe** inicial **alineada** con resonancias reales.
+
+---
+
+## **Fase III — Interpretaciones Espontáneas y Controladas**
+
+### **Propósito**
+
+**Probar** las **resonancias** del héroe: primero con **interpretaciones espontáneas** que emergen **naturalmente**, y luego con **técnicas de control** de interpretaciones para **seleccionar** las que **mejor resuenan** con nosotros y con nuestros héroes/identidades.
+
+### **Cómo funciona**
+
+1. **Espontáneo (dionisíaco)**: se recorre, sin forzar, la aparición de interpretaciones en las esferas **corpomaterial**, **intelectual**, **emocional** y **sexocreativa por medio de intereses placenteros**.
+
+2. **Controlado (apolíneo)**: se aplican **técnicas de control** para **modular/dirigir** interpretaciones y **elegir** las que **resuenan en las 4 esferas**.
+
+3. **Comparación** de respuestas (espontáneas vs. controladas) y **ajustes** del set del héroe.
+
+### **Técnicas y conceptos en esta fase**
+
+* **Test de resonancias** del héroe en **cuatro esferas**.
+
+* **Doble vía**: espontáneo (dionisíaco) y controlado (apolíneo), con foco en **selección**.
+
+### **Por qué existe esta fase**
+
+Para **contrastar** lo que **emerge** por sí mismo con lo que **podemos orientar**, y así **depurar** el **set de interpretaciones** operativas del héroe. En esta fase el héroe empieza a aclarar sus intereses significativos que determinarán su mitología y su ritualidad (re-interpretación significativa del mundo), las cuales son indispensables para un dialogo interno significativo (de armonía interna y no conflicto interno). 
+
+---
+
+## **Fase IV — Tummoidentidad II (Compresión & Microtemáticas)**
+
+### **Propósito**
+
+Construir un **mejor héroe** a partir de **nuevas interpretaciones** derivadas del **ciclo emocional** y **comprimir** técnicas para **intervenir microtemáticas**.
+
+### **Cómo funciona**
+
+1. **Microtemáticas**: son **temas** de **interés/anti‑interés** (nodos de la red/grafo) con **gran peso** sobre nosotros, que **generan disonancia** y **diálogo interno destructivo** por **reacciones emocionales/impulsivas** y **interpretaciones** que **hacen más daño que bien**.
+
+   * Estas **grandes temáticas** (que se repiten en problemas o eventos significativos) **aparecen** como **micro‑comportamientos** y **micro‑creencias** (algunas **conscientes**, otras **subconscientes**) que dejamos **gobernar** nuestra vida **sin cuestionamiento**.
+
+   * Una vez nuestros intereses son resonantes y nuestros anti-intereses disonantes, nos alejamos de todo aquello que supone una imposición y un dialogo interno conflictivo, para acercarnos a aquellos intereses que genuinamente nos entusiasman, así como el amante se entusiasma al contemplar al amado, y se transforma radicalmente para ser digno del amado (siendo el amado la representación mística del universo como movimiento infinito y eterno). 
+
+2. **Compresión del héroe**: **cambio de estado corporal**, **meditación‑concentración**, **journaling** y **visualización**, **comprimidos** en **pocos segundos** para atender **micro‑comportamientos/creencias** que afectan la **macro‑vida**.
+
+### **Técnicas y conceptos en esta fase**
+
+* **Derivación** de nuevas interpretaciones desde el **ciclo emocional**.
+
+* **Compresión** de **(1) cambio de estado corporal**, **(2) meditación‑concentración**, **(3) journaling**, **(4) visualización**.
+
+* **Intervención** en **microtemáticas** (nodos de interés/anti‑interés con alto peso).
+
+### **Por qué existe esta fase**
+
+Para **actuar en tiempo real** sobre **micro‑patrones** que **arrastran** el rumbo de la **macro‑vida**, integrando **técnicas** en **ventanas ultrabreves** de ejecución.
+
+---
+
+## **Fase V — Interpretaciones de Inmunización**
+
+### **Propósito**
+
+Aplicar **técnicas** que **elevan** deliberadamente **miedo** y **aversión** para **ver** si podemos **controlar** esos **mecanismos imperfectos** mediante las **interpretaciones** aprendidas en **Tummo 1** y la **compresión** de las mejores interpretaciones.
+
+### **Cómo funciona**
+
+1. **Stress‑test** de **voluntad** y **flexibilidad** en las **cuatro esferas** (corpomaterial, intelectual, emocional, sexocreativa).
+
+2. **Inmunización (apólodionisiaca)** frente a **disonancias imperfectas (genéticas y meméticas)**, con el objetivo de **evitarlas a voluntad**.
+
+### **Técnicas y conceptos en esta fase**
+
+* **Elevación deliberada** de **respuestas de miedo/aversión**.
+
+* **Aplicación** de **interpretaciones seleccionadas** y **compresión** para **gobernar** la respuesta.
+
+### **Por qué existe esta fase**
+
+Para **fortalecer** la **capacidad de elección** bajo **estrés** y **consolidar** una **inmunización** que reduzca el impacto de disonancias **cuando importan más**. En esta fase el héroe define con claridad absoluta quién o qué es su villano externo, interno y filosófico dentro de su mitología y ritualidad. 
+
+---
+
+## **Fase VI — Reto Final**
+
+### **Propósito**
+
+Llevar al **límite** el **control** de interpretaciones para **aumentar** aún más la **inmunización** frente a **identidades disonantes o impuestas** y, **después**, **liberar** ese control en **interpretaciones espontáneas** que funcionan como **juego no estructurado**, de donde **emergen** más **resonancias**, **interés** e **identidades**.
+
+### **Cómo funciona**
+
+1. **Máxima inmunización apolínea** mediante **desafíos** y **contención**.
+
+2. **Máxima espontaneidad dionisíaca** mediante **juego** y **cambio**.
+
+### **Técnicas y conceptos en esta fase**
+
+* **Control y locura lúcido**.
+
+* \*\*Reto y **disfrute del cambio de estado**.
+
+* **Reto de introspección** y **Juego psicodélico no estructurado**.
+
+### **Por qué existe esta fase**
+
+Para **cerrar** el ciclo con una **doble maestría**: (1) **control** suficiente para **no ser arrastrados** por disonancias impuestas y (2) **espontaneidad** suficiente para **descubrir** nuevas **resonancias** e **identidades**.
+
+---
+
+## **Indicadores de progreso (transversales)**
+
+* **Red/grafo de interés y anti‑interés**: crecimiento de nodos **resonantes** y reducción de nodos **disonantes** con **alto peso**.
+
+* **Ciclo emocional**: menor **latencia** entre evento → reinterpretación **constructiva** → acción **alineada**.
+
+* **Microtemáticas**: **frecuencia** e **intensidad** de activación **disminuyen**; **recuperación** más **rápida**.
+
+* **Inmunización**: aumento de **tolerancia** a **miedo/aversión** con mantenimiento de **elección voluntaria**.
+
+* **Héroe/Identidad**: mayor **coherencia** de **comportamientos‑creencias** con la **conjetura** del héroe.
+
+* Mitología/ritualidad: creación del sentido de la vida en relación con la red de interés. 
+
+Estos indicadores son **observacionales** y **pragmáticos**: sirven para **ajustar** la selección de interpretaciones y la compresión en ciclos iterativos.
+
+---
+
+---
+
+## **Glosario**
+
+Entrada breve y clara por término. Aquello marcado con **\[por completar\]** queda como casilla abierta para que lo completes más adelante.
+
+* Hábito — Un comportamiento que resuelve un problema o aporta significado, y que se repite en el tiempo de manera consistente. 
+
+* Creencia — Una predicción (narrativa/historia) que resuelve un problema o aporta significado, que se soporta en evidencia que refuerza la predicción, y que se repite en el tiempo de manera consistente.
+
+* Identidad — Conjunto de hábitos y creencias para resolver problemas, y crear significados; puede ser impuesta y detonar diálogos internos conflictivos, o puede ser descubierta y generar diálogos internos armoniosos. 
+
+* **Arquemétricas** — Proceso para identificar el **rol arquetípico** y resumirlo en una **tarjeta tipo béisbol** (rol, fortalezas, debilidades, errores comunes). Base de **Pre‑Tummoidentidad**.
+
+* **Tummo / Tummoidentidad** — Preparación teórica para la **variación y selección de interpretaciones** basadas en **resonancias**, con el fin de **incrementar** las **redes de interés/anti‑interés** y **crear conjuntos de identidades**.
+
+* Resonancia e intereses — Alineación entre interpretaciones y feedback subconsciente. Define nuestros intereses, nos energiza y nos atrae. 
+
+* Disonancia y anti-intereses — Desalineación entre interpretaciones y feedback subconsciente. Define nuestros anti-intereses, que nos drenan y nos repulsan; sin embargo se mezclan con nuestro intereses genuinos en forma de un "interés" impuesto, o un interés genuino rechazado por imposiciones sociales.
+
+* **Esferas de resonancia** — Tres focos: **eventos externos** (percepción), **eventos internos** (interocepción) y **eventos temperamentales** (subconsciente).
+
+* **Capas de resonancia** — **Interpretaciones físicas** y **psíquicas** (*quantia* y *qualia*) y **feedback subconsciente**.
+
+* **Esferas (4)** — **Corpomaterial**, **Intelectual**, **Emocional** y **Sexocreativa** (usadas para testear interpretaciones).
+
+* **Ciclo emocional** — `evento (quantia/qualia) → interpretación → deseo (feedback de inclinación) → acción → emoción (feedback de afinidad) → resultado/re‑start (resonancia o disonancia)`; permite decidir **aceptación‑reinterpretación** vs **negación‑negativización**.
+
+* **Resonancia / Disonancia** — Resultado de la interacción entre evento e interpretación que **aumenta** o **disminuye** afinidad, interés y coherencia del diálogo interno.
+
+* **Red/Grafo de interés y anti‑interés** — Mapa de **nodos** y **pesos** que representan lo que atrae/repulsa; guía la selección de interpretaciones e **indicadores de progreso**.
+
+* **Héroe / Identidad** — **Set de interpretaciones** instanciables en la vida cotidiana (incluye **hypnos**, **quest**, **errores que no comete** y **comportamientos‑creencias** que sí tiene/hace).
+
+* **Hypnos (hipnosis‑reinterpretativa)** — Técnica para **anclar** reinterpretaciones y encarnarlas en el **héroe/identidad**.
+
+* **Quest (identidades, hábitos y creencias)** — Definición operativa de **metas**, **hábitos** y **creencias** del héroe; guía acciones consistentes. Creación de misiones apolíneas (para resolver problemas) y misiones dionisiacas (para crear mitologías y rituales significativos).
+
+* **Cajas blancas / Cajas negras** — Dinámicas de **apolíneo/dionisíaco** aplicadas a las formas de resolver problemas, a través de la fluidez o la asertividad.
+
+* **Apolíneo / Dionisíaco** — **Apolíneo**: orden, medida, control consciente; **Dionisíaco**: espontaneidad, juego, flujo.
+
+* **Interpretaciones espontáneas** — Predicciones que **emergen naturalmente** en las cuatro esferas tras usar técnicas que inducen jubilo (énfasis dionisíaco).
+
+* **Interpretaciones controladas** — Predicciones **dirigidas** mediante técnicas de control en las cuatro esferas para **seleccionar** las que mejor resuenan (énfasis apolíneo).
+
+* **Microtemáticas** — **Nodos** (temas, hábitos o creencias) con **alto peso** que, de ser impuestos, generan **disonancia** y **diálogo interno destructivo** si no se intervienen. Y de ser espontáneos, si no se cultivan, alejan de la resonancia y el diálogo interno significativo. 
+
+* **Compresión (del héroe)** — Paquete **ultra‑breve** de técnicas: **cambio de estado corporal**, **meditación‑concentración**, **journaling** y **visualización** ejecutado en **segundos** para intervenir **microtemáticas** en tiempo real.
+
+* **Inmunización (apolodionisíaca)** — **Pruebas de estrés** (miedo/aversión elevados de forma segura) para entrenar **voluntad** y **flexibilidad** y así **evitar disonancias** a voluntad.
+
+* **Villano externo / interno / filosófico** — Figuras que estructuran la **mitología personal**; ayudan a delimitar **conflictos** y **criterios** de elección.
+
+* **Mitología / Ritualidad** — Re‑interpretación significativa del mundo (mitología) y **prácticas** que la encarnan (ritualidad) orientadas por la **red de interés**.
+
+* **Control lúcido** — Técnicas para **mantener agencia** sobre interpretaciones y estados oníricos. 
+
+* **Disonancias genéticas y meméticas** — Orígenes **biológicos** y **culturales** de ciertas disonancias que se buscan **inmunizar**.
+
+---
+
+## **Anexos / Enlaces a documentos específicos (placeholders)**
+
+Estos enlaces se completarán más adelante; este documento servirá de **base** para un documento **JSON** en una página donde se irán incorporando todos los documentos específicos por fase.
+
+* **Fase I — Pre‑Tummoidentidad (Arquemétricas):** [Documento específico de Arquemétricas y Tarjeta “baseball”](https://chatgpt.com/g/g-p-681d1b6d168c8191a401873e884d5d35-archid/c/68fa3a93-ad04-832a-b345-6c78500ffd82#)
+
+* **Fase II — Tummoidentidad I (Descubrimiento por Resonancias):** [Documento específico de Tummo I, Esferas/Capas y Ciclo Emocional](https://chatgpt.com/g/g-p-681d1b6d168c8191a401873e884d5d35-archid/c/68fa3a93-ad04-832a-b345-6c78500ffd82#)
+
+* **Fase III — Interpretaciones Espontáneas y Controladas:** [Documento específico de Test de Resonancias y Selección](https://chatgpt.com/g/g-p-681d1b6d168c8191a401873e884d5d35-archid/c/68fa3a93-ad04-832a-b345-6c78500ffd82#)
+
+* **Fase IV — Tummoidentidad II (Compresión & Microtemáticas):** [Documento específico de Compresión y Microtemáticas](https://chatgpt.com/g/g-p-681d1b6d168c8191a401873e884d5d35-archid/c/68fa3a93-ad04-832a-b345-6c78500ffd82#)
+
+* **Fase V — Interpretaciones de Inmunización:** [Documento específico de Inmunización y Stress‑tests](https://chatgpt.com/g/g-p-681d1b6d168c8191a401873e884d5d35-archid/c/68fa3a93-ad04-832a-b345-6c78500ffd82#)
+
+* **Fase VI — Reto Final:** [Documento específico de Retos, Inmunización Máxima y Juego No Estructurado](https://chatgpt.com/g/g-p-681d1b6d168c8191a401873e884d5d35-archid/c/68fa3a93-ad04-832a-b345-6c78500ffd82#)
+
+---
+
+END ARQUEIDENTIDAD
+
+
+FASE 6 
+CREATE NOTES FOR AI TO ORGANIZE PROPERLY
+
+• omicron apollodionysian
+	• niacin (physical) / social fears (ask for discount, number V crazier and laying on the floor, walk backwards V 1-min speech) (emotional)
+	• breathwork (corpomaterial) 
+	• onirotech (can help empty meditation, or empty plus deprivation tanks -https://www.serenityfloatcenter.co/precios-) (intellectual)
+	• keto/psilocibin
+	• dynamics: introspective-apollonian & unstructured_play-dionysian (for all fo the challenges?)
+        • preparation: HTDR on deep hypnosis (weekly) (hyperthematic HTDR, visualization, mantra-meditation, physical-state, journaling... to reinforce final challenge) // before any challenge
+
+Phase 6
+
+• Pre-hypnos: ekko+kara before any challenge.
+• Niacin unstructured2structured (no much preparation → structured ritual around it → Semi-structured ritual where empty spaces are programmed)
+• Social fears (do them, then journal them)
+• Breathwork (same as niacin)
+• Oniro tech (special section, but once achieved, same as niacin)
+• Keto/Psilocibin (same as niacin)
+
+◇─◇─◇─◇ ◇─◇─◇─◇ ◇─◇─◇─◇
+
+Phase 6 v2
+
+Prep
+
+- niacin
+
+- nsdr hardcore (mystical) (see below)
+
+- social fear (lying down in public 3-5 minutes)
+
+/-/
+
+- NSDR Hardcore (prepares for lucid-dreaming, keto-breathwork, psilocybin, )
+  - 40-60 mins
+  - weightless headphones loop
+  - sleep mask
+  - sigh breathing [respiración suspiro] (diaphragmatic noiseless nose breathing: two inhales, one long exhale)
+  - visualize going over each part of your body, from feet to head, with a highlight relaxing it to the max (each parts become heavier and feels like they sink), once you've done all your body just go again over all your body feeling the relaxedness, temperature and heaviness
+  - let yourself lose in a mystical experience/protean experience
+  - come back slowly
+
+- Cold exposure & Fasting (Mention it as immunization prep for max control & max mysticism, max structure/unstructured)
+
+◇─◇─◇─◇ ◇─◇─◇─◇ ◇─◇─◇─◇
+
+Liminal-Exec
+
+- Ganzfeld effect (see below)
+
+- Oniro-technology 
+  - [return to ganzfeld after oniro if not successful first time]
+
+-  DMT/Psilocibin
+  - If too much chaotic rather than cosmotic then stay with hardcore NSDR + Ketosis
+
+/-/
+
+- Sensory Homogenization (ganzfeld)
+  - 60 minutes
+  - halved ping pongs over eyes
+  - red light at face
+  - white/pink noise + noise cancelling headphones
+
+- Oniro-tech
+* Dream recall
+  * every morning, write dream fragments immediately (nothing before)
+* Reality checks
+  * 1 triggers you already do: doors, time/phone, strong emotion
+  * ask: “am I dreaming?” & read text twice or inspect a pattern twice 
+* WBTB + MILD
+  * 2 practice nights/week
+  * wake after ~5 hours of sleep, stay up 10–20 min to start; move toward 30–60 min if tolerated
+  * recall last dream, visualize noticing the dream sign and repeat: “next time I’m dreaming, I will remember that I’m dreaming”
+  * go back to sleep quickly 
+* Stabilize lucidity
+  * do not get excited and, optionally, then do 1 preselected action 
+  * rub hands / look at hands / spin
+* Optional advanced lever
+  * galantamine (with precaution)
+
+- Psilocibin/DMT
+  - start with small dose, pre-perceptual and see how it works
+  - make sure no schizophrenia, psyschosis or bipolar disorder runs on your family
+
+- To be repeated quarterly/semestral-y
+
+END FASE 6

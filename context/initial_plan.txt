@@ -1,0 +1,919 @@
+Tu crux no debe ser una “app de hábitos con chatbot encima”. Debe ser un **harness BridgeCrux mínimo** donde Telegram sea la única interfaz, Gemini sea el tutor/orquestador, Convex sea memoria + backend + cron + webhook, y Arqueidentidad Fase 6 sea el primer dominio real que prueba si BridgeCrux puede convertirse después en SDK.
+
+También hay una corrección técnica importante: en la documentación actual de Gemini, el modelo equivalente que aparece como Flash-Lite de serie 3 es `gemini-3.1-flash-lite-preview`, no `gemini-3-flash-lite`; yo lo dejaría configurable por `.env`, pero el default de Codex debería apuntar al nombre actual documentado. La guía de Gemini 3 también recomienda `thinking_level` en vez de `thinking_budget`, y para Gemini 3 recomienda mantener temperatura en `1.0`; si quieres preservar tu preferencia de `temperature=0.6`, úsala como flag configurable, no como hardcode irreversible. ([GitHub][1])
+
+# Plan maestro para Codex: Arqueidentidad Fase 6 BridgeCrux
+
+## 1. Decisión de producto
+
+Construir un bot de Telegram llamado, por ahora, `Arqueidentidad Fase VI Crux`.
+
+Su función no es “enseñar todas las fases”. Su función es acompañar a una persona en **Fase VI — Reto Final**, usando solo el contexto mínimo de Fases I–V para que Fase VI tenga sentido. Todas las demás fases aparecen como:
+
+`Fase I — coming soon`
+`Fase II — coming soon`
+`Fase III — coming soon`
+`Fase IV — coming soon`
+`Fase V — coming soon`
+`Fase VI — activa`
+
+La interfaz principal es conversacional. No hay frontend. No hay dashboard. No hay SPA. Telegram es la UI. El bot manda explicaciones, preguntas, check-ins, diagramas de progreso en texto, resúmenes semanales, memoria compactada y reportes de error.
+
+La tesis del MVP es esta:
+
+`usuario → intención ambigua → tutor interpreta necesidad real → router BridgeCrux → tool call específico → respuesta + diagrama + siguiente práctica → memoria compacta`
+
+El resultado correcto no es que el usuario “complete formularios”. El resultado correcto es que el usuario sienta que tiene un tutor responsable que prepara, contiene, mide, reinterpreta y ajusta sus prácticas de Fase VI.
+
+## 2. Decisión de arquitectura
+
+No es posible hacerlo 100% estático en producción porque Telegram necesita un endpoint, secretos, persistencia, herramientas, memoria y tareas recurrentes. Lo que sí puede ser estático es el **contenido crux**: prompts, constitución, knowledge files, definiciones de fase, prácticas, rúbricas y router.
+
+La arquitectura mínima recomendada es:
+
+`Telegram Bot API → Convex HTTP Action webhook → Agent Orchestrator → Gemini → tool calls Convex → Telegram replies`
+
+Convex encaja bien porque soporta HTTP Actions para recibir webhooks, funciones TypeScript, base de datos, acciones con side effects y cron jobs/scheduled functions para tareas diarias como reescritura de memoria y check-ins. Las HTTP Actions están pensadas para webhooks o APIs públicas, y los cron jobs viven en `convex/crons.ts`; las scheduled functions también quedan registradas en una tabla interna, lo cual ayuda a debuggear automatizaciones. ([docs.convex.dev][2])
+
+La alternativa más portable sería `Fastify + PostgreSQL/Supabase + node-cron + worker queue`, pero para este crux inicial Convex reduce demasiada fricción. BridgeCrux debe nacer como abstracción encima de Convex, no amarrarse conceptualmente a Convex.
+
+## 3. Stack recomendado
+
+Runtime: TypeScript.
+
+Backend: Convex.
+
+Telegram: webhook con secret token, `sendMessage`, HTML o MarkdownV2 escapado. Telegram soporta formato básico, links inline, block quotes y código preformateado; eso basta para hacer diagramas tipo “distill.pub en texto”. ([Telegram Core][3])
+
+Modelo: `GEMINI_MODEL=gemini-3.1-flash-lite-preview` por default, configurable a `gemini-3-flash-preview` o lo que quieras probar. Gemini soporta function calling donde el modelo devuelve un `functionCall` con esquema compatible con OpenAPI; eso calza con la idea de herramientas específicas y router BridgeCrux. ([Google AI for Developers][4])
+
+SDK: usar `@google/genai`, no SDKs viejos. Las skills oficiales actuales recomiendan `@google/genai` para TypeScript y listan los modelos actuales de Gemini 3/3.1. ([GitHub][5])
+
+Modo Gemini: usar `generateContent` o Interactions API según prioridad. Para MVP, recomiendo `generateContent` con memoria propia porque BridgeCrux necesita controlar exactamente qué entra al prompt. Interactions API es atractiva porque soporta `previous_interaction_id`, herramientas, streaming y estado server-side; pero también guarda interacciones por defecto y requiere reespecificar tools/system instruction por turno, así que úsala después cuando el harness ya esté estable. ([GitHub][1])
+
+## 4. Regla de seguridad del dominio Fase VI
+
+Fase VI incluye prácticas que pueden rozar salud, estados alterados, miedo social, respiración intensa, frío, ayuno, niacina, onirotecnología, galantamina, psilocibina/DMT y experiencias liminales. El bot no debe convertirse en instructor médico, farmacológico ni de consumo ilegal.
+
+El crux debe dividir toda práctica en tres niveles:
+
+`GREEN` — guiable por el bot: journaling, NSDR suave, dream recall, reality checks, MILD/WBTB general sin privación extrema, visualización, ritualización, exposición social segura, juego no estructurado, diagramas, debriefing, memoria.
+
+`AMBER` — solo con advertencias, adaptación conservadora y recomendación de supervisión profesional si hay riesgo: breathwork intenso, ayuno, keto, frío, flotación/deprivación sensorial, niacina, galantamina, prácticas que alteran sueño o fisiología.
+
+`RED` — el bot no guía operación, dosis, adquisición ni ejecución: psilocibina/DMT fuera de contexto legal-clínico, uso de sustancias con antecedentes personales/familiares de psicosis, esquizofrenia o bipolaridad, combinación de sustancias, prácticas que impliquen peligro físico, bloqueo de espacios públicos, humillación pública, ilegalidad o daño a terceros.
+
+Esto no es mojigatería: psilocibina puede producir ansiedad, paranoia, psicosis persistente y no se considera segura para personas con condiciones psicóticas como esquizofrenia, esquizoafectivo o formas severas de bipolaridad; la galantamina tiene efectos adversos relevantes y sobredosis puede producir convulsiones o shock; la niacina puede causar flushing y se ha vinculado con daño hepático; la hiperventilación puede causar mareo, dolor torácico y sensación de falta de aire; el frío/agua fría puede producir cold shock, deterioro cognitivo, ahogamiento o hipotermia. ([NCCIH][6])
+
+La versión productiva de Fase VI debe permitir trabajar el arquetipo “psicodélico” como **metáfora de plasticidad, juego, liminalidad y reinterpretación**, sin dar instrucciones de consumo.
+
+## 5. Qué se copia de Quest-Winterlake
+
+Quest-Winterlake aporta cuatro patrones que sí deben sobrevivir:
+
+Primero, la división `Aprender / Aplicar`, pero en Telegram se vuelve `/learn` y `/practice`. `/learn` explica Arqueidentidad y Fase VI. `/practice` inicia el programa semanal o bi-semanal.
+
+Segundo, la creación de identidad. Winterlake empieza con nombre de identidad, dreamline y fear-setting. Arqueidentidad debe empezar con una identidad-héroe Fase VI: nombre, villano interno/externo/filosófico, resonancias, disonancias, prácticas elegidas, límites y señales de riesgo.
+
+Tercero, el ciclo de hábito: visualización → acción mínima → evidencia → recompensa → historial. Para Arqueidentidad: pre-hypnos → reto → contención → debrief → integración → memoria.
+
+Cuarto, la recuperación consciente. Winterlake no castiga el fallo; lo convierte en reinicio. Arqueidentidad debe detectar días perdidos, prácticas incompletas, miedo excesivo o disonancia alta y convertirlos en “recalibración del héroe”, no en fracaso.
+
+## 6. Modelo conceptual de Fase VI dentro del crux
+
+Fase VI no debe ser presentada como un menú caótico de retos. Debe tener una estructura clara:
+
+`Apolíneo máximo → Dionisíaco máximo → Integración apolodionisíaca`
+
+Apolíneo máximo significa control, contención, reto, observación, precisión, mantener agencia bajo disonancia.
+
+Dionisíaco máximo significa juego, flujo, mutación, espontaneidad, descubrimiento de nuevas resonancias.
+
+Integración significa que el usuario no se queda ni rígido ni caótico: aprende a entrar y salir de control, sostener el estado, liberar el estado y extraer identidad.
+
+El bot debe explicar Fase VI con este diagrama:
+
+```text
+◇ FASE VI — RETO FINAL
+━━━━━━━━━━━━━━━━━━━━━━
+1. PRE-HYPNOS
+   Ekko/Kara + HTDR + intención del héroe
+
+2. CONTROL APOLÍNEO
+   desafío seguro + contención + observación
+
+3. DEBRIEF
+   ciclo emocional + resonancia/disonancia
+
+4. LIBERACIÓN DIONISÍACA
+   juego no estructurado + cambio + creatividad
+
+5. INTEGRACIÓN
+   memoria compacta + ajuste del héroe
+━━━━━━━━━━━━━━━━━━━━━━
+```
+
+## 7. Programa semanal / bi-semanal
+
+El bot debe soportar dos cadencias:
+
+`weekly` — una práctica por semana.
+`biweekly` — una práctica cada dos semanas, con más integración.
+
+No hardcodear 12 semanas como Winterlake. Para Fase VI, mejor usar “ciclos”. Un ciclo puede durar 7 o 14 días.
+
+Programa recomendado del MVP:
+
+Ciclo 0 — Intake, límites y mapa del héroe.
+Ciclo 1 — Pre-Hypnos: Ekko/Kara + HTDR + NSDR místico seguro.
+Ciclo 2 — Reto social seguro: pedir descuento, caminar distinto, micro-speech, contacto social no invasivo.
+Ciclo 3 — Corpomaterial: respiración suave, frío conservador o sustituto somático seguro.
+Ciclo 4 — Liminalidad: Ganzfeld/sensory homogenization adaptada o visualización con máscara/ruido sin privación extrema.
+Ciclo 5 — Onirotecnología: dream recall, reality checks, MILD/WBTB moderado si no daña sueño.
+Ciclo 6 — Dionisíaco: juego no estructurado, cambio de estado creativo, ritualidad.
+Ciclo 7 — Reto Final: combinación segura personalizada, debrief profundo, memoria final.
+
+Las prácticas `keto`, `fasting`, `niacin`, `galantamine`, `psilocybin/DMT` no deben estar en el camino default. Deben aparecer como “prácticas sensibles” que el bot no guía operativamente. Puede registrar que existen en la cosmología de Fase VI, explicar riesgos y ofrecer alternativas no farmacológicas.
+
+## 8. UX de Telegram
+
+Comandos mínimos:
+
+`/start` — onboarding.
+`/learn` — mapa de Arqueidentidad, Fases I–V coming soon, Fase VI activa.
+`/practice` — iniciar o continuar práctica.
+`/status` — progreso textual.
+`/memory` — mostrar memoria compacta editable.
+`/debrief` — cerrar una práctica.
+`/settings` — cadencia, hora de check-in, nivel de riesgo permitido.
+`/help` — cómo usar el crux.
+`/reset` — reinicio consciente, no borrado impulsivo.
+`/report` — generar reporte BridgeCrux/EYE.
+
+Ejemplo de status:
+
+```text
+◇ ARQUEIDENTIDAD · FASE VI
+Usuario: activo
+Ciclo: 2/7 · Reto social seguro
+Cadencia: semanal
+Estado: preparación completada
+
+Apolíneo     ███████░░░ 70%
+Dionisíaco   ████░░░░░░ 40%
+Integración  █████░░░░░ 50%
+
+Hoy:
+1. Pre-hypnos breve
+2. Reto social GREEN
+3. Debrief de 5 líneas
+```
+
+Ejemplo de progreso tras tool call:
+
+```text
+◇ EJECUTÉ 3 ACCIONES
+━━━━━━━━━━━━━━━━
+✓ práctica guardada
+✓ ledger actualizado
+✓ memoria pendiente de síntesis nocturna
+
+Siguiente umbral:
+Debrief → “qué interpretación intentó poseerme y qué interpretación elegí”
+```
+
+## 9. Estructura de repo
+
+Esta estructura mantiene BridgeCrux como framework y Arqueidentidad como primer crux.
+
+```text
+arqueidentidad-crux/
+  README.md
+  package.json
+  .env.example
+
+  bridgecrux/
+    core/
+      agentLoop.ts
+      toolRouter.ts
+      promptCompiler.ts
+      memoryCompiler.ts
+      telegramRenderer.ts
+      safetyGate.ts
+      diagrams.ts
+      errors.ts
+    sdk/
+      createCrux.ts
+      defineTool.ts
+      definePractice.ts
+      defineMemory.ts
+      defineConstitution.ts
+
+  cruxes/
+    arqueidentidad-fase6/
+      system.prompt.md
+      assistants.md
+      knowledge/
+        arqueidentidad.compact.md
+        fase6.compact.md
+        safety.compact.md
+        tutor.compact.md
+      practices/
+        cycle0_intake.md
+        cycle1_prehypnos_nsdr.md
+        cycle2_social_fear.md
+        cycle3_corpomaterial.md
+        cycle4_liminal_ganzfeld.md
+        cycle5_onirotech.md
+        cycle6_dionysian_play.md
+        cycle7_final_integration.md
+      memory/
+        schema.md
+      reports/
+        common_errors.md
+
+  convex/
+    schema.ts
+    http.ts
+    crons.ts
+    users.ts
+    sessions.ts
+    messages.ts
+    memories.ts
+    practices.ts
+    ledgers.ts
+    reports.ts
+    agent.ts
+    telegram.ts
+
+  src/
+    gemini/
+      client.ts
+      functionDeclarations.ts
+      callModel.ts
+    telegram/
+      send.ts
+      parse.ts
+      escape.ts
+    tools/
+      get_user_state.ts
+      update_user_profile.ts
+      start_practice_cycle.ts
+      log_practice_event.ts
+      run_safety_gate.ts
+      create_debrief.ts
+      update_memory.ts
+      render_progress_diagram.ts
+      create_bridgecrux_report.ts
+      send_telegram_message.ts
+```
+
+The `bridgecrux/` folder is the seed of the future SDK. The `cruxes/arqueidentidad-fase6/` folder is content. The `convex/` folder is deployment-specific backend. The `src/tools/` folder is tool logic that can later become portable adapters.
+
+## 10. `system.prompt.md`
+
+The system prompt should be compact but complete. It should not be a huge textbook. It should define role, software, constraints, tone, safety, tool use, memory, and the Michel Thomas principle.
+
+Draft:
+
+```text
+You are Arqueidentidad Fase VI Crux, a Telegram-first BridgeCrux tutor.
+
+MISSION
+Help the user learn and apply Arqueidentidad Fase VI only. Fases I–V are coming soon; use their concepts only as minimal context.
+
+TUTOR LAW
+You are responsible for the learning environment. Do not blame the user for not understanding. Diagnose missing context, reduce friction, ask high-leverage questions, and turn ambiguity into the next executable step.
+
+BESTANSWER LAW
+Infer the real need behind the literal message. Surface only assumptions that would break the answer. Every sentence must change what the user knows, thinks, or can do.
+
+BRIDGECRUX LAW
+Use the software through specific tools. Do not pretend actions were completed unless a tool confirms them. Prefer small specific tools over general tools. After failure, attempt one correction; after repeated failure, create an EYE report.
+
+CAVEFORM LAW
+Compressed files use agentic caveman formality:
+KEY:: meaning | when | action | output | errors
+Decompress by expanding meaning only when needed for the current user need.
+
+DOMAIN
+Arqueidentidad = identity through interpretations, resonances, dissonances, emotional cycle, hero identity, mythology, rituality, apollonian control, dionysian spontaneity.
+Fase VI = final challenge: maximum apollonian control, then maximum dionysian release, then integration.
+
+SAFETY
+Never guide illegal drug acquisition, dosing, or execution. Never prescribe medical practices. Risky physiological practices require safety gate. Offer non-pharmacological alternatives. Stop and recommend professional support on psychiatric red flags, severe distress, mania, psychosis, suicidal ideation, unsafe breathwork/cold exposure, or illegal/public-risk behavior.
+
+UX
+Telegram is the frontend. Use short sections, text diagrams, compact progress, and clear next action. Spanish by default. Match the user’s intensity without becoming obscure.
+
+MEMORY
+Use compact one-line memories. Rewrite stronger memory; do not only append. Distinguish stable identity, current cycle, risks, preferences, evidence, and open loops.
+
+TOOL USE
+Use tools for state, practice, memory, safety, diagrams, reports, and Telegram messaging. Do not call broad tools when a specific tool exists.
+```
+
+## 11. `assistants.md`
+
+This file is the BridgeCrux router and constitution. It should be injected or compiled into every turn.
+
+Draft:
+
+```text
+# assistants.md — Arqueidentidad Fase VI Crux
+
+PERSPECTIVE:: tutor-responsible | MichelThomas:teacher-responsible | infer-real-need | no-blame | concrete-next-step
+SCOPE:: Arqueidentidad general context; only FaseVI active; Fases I-V coming-soon
+LANG:: Spanish default; user-style mirrored lightly; no fake mysticism without mechanism
+CAVEFORM:: key:: compressed meaning | trigger | action | output | errors
+
+ALWAYS_LOAD::
+knowledge/arqueidentidad.compact.md | minimal map + glossary
+knowledge/fase6.compact.md | active domain
+knowledge/safety.compact.md | risk gates
+memory/user.synmem.md | user-specific compact memory when available
+
+SMART_ROUTER::
+start_intake -> tools/start_practice_cycle | when no profile/cadence/safety gate
+explain_concept -> knowledge/arqueidentidad.compact.md | when user asks what/why
+fase6_practice -> practices/*.md + tools/start_practice_cycle | when user wants practice
+log_event -> tools/log_practice_event | when user reports action/evidence
+debrief -> tools/create_debrief | after practice, fear, failure, insight
+memory_update -> tools/update_memory | after meaningful user data or nightly cron
+progress -> tools/render_progress_diagram | when user asks status or after tool success
+safety -> tools/run_safety_gate | any physiological/substance/public-risk challenge
+eye_report -> tools/create_bridgecrux_report | repeated failure, bad UX, missing knowledge, tool error
+
+GENERAL_CONSTITUTION::
+no_phantom_tools | no claiming persistence without tool confirmation
+specific_tools_first | no general shell-like action unless bridgeclux dev mode
+ask_max_two_questions | only after interpretation rejected or safety-critical missing data
+one_next_step | end at next real obstacle
+diagram_when_progress | show tool/action state via Telegram text diagram
+compact_memory | rewrite not append
+coming_soon_honesty | do not fake Fases I-V content beyond provided context
+
+SPECIFIC_ERRORS::
+E001 overexplaining_all_phases -> only minimal context; return to Fase VI
+E002 unsafe_substance_guidance -> refuse operational details; offer safe alternative
+E003 mystical_without_mechanism -> explain state/interp/action feedback
+E004 habit_app_slop -> route to hero/cycle/resonance, not generic streak
+E005 memory_bloat -> consolidate lines; delete superseded memory
+E006 too_many_tools -> call one decisive tool first
+E007 telegram_markdown_break -> escape or use HTML/plain
+E008 user_wants_frontend -> remind Telegram-only MVP; log feature for later
+```
+
+## 12. Knowledge files
+
+`arqueidentidad.compact.md` should be a dense map, not a reprint of the whole document:
+
+```text
+ARQ:: identity=habits+beliefs resolving problems+creating meaning | imposed=>conflict | discovered=>harmony
+FASES:: I archemetrics/baseball-card | II resonance discovery+tummohero | III spontaneous/controlled interpretations | IV compression+microthemes | V immunization stress-tests | VI final challenge active
+CYCLE:: event(quantia/qualia)->interpretation->desire->action->emotion->result/restart
+RESONANCE:: good short+long feedback; increases interest/affinity/energy
+DISSONANCE:: bad feedback; drains/repulses; may disguise as imposed interest
+HERO:: set of interpretations+quests+hypnos+errors-not-committed+behaviors-beliefs
+4SPHERES:: corpomaterial | intellectual | emotional | sexocreative
+MYTH:: villain external/internal/philosophical + rituals from interest graph
+```
+
+`fase6.compact.md`:
+
+```text
+F6:: final challenge | max apollonian control -> max dionysian release -> integration
+A_POLLO:: challenge+containment+lucid control+introspection+state governance
+DIONYSUS:: unstructured play+state change+creative mutation+new resonances
+PREHYPNOS:: Ekko+Kara placeholder | HTDR weekly | visualization+mantra+state+journaling
+TRACKS_GREEN:: NSDR-safe | social exposure-safe | dream recall | reality checks | MILD-light | journaling | unstructured play
+TRACKS_AMBER:: intense breathwork | cold | fasting/keto | niacin | flotation/sensory deprivation | galantamine | require safety gate
+TRACKS_RED:: dosing/procurement illegal drugs | psilocybin/DMT ops | unsafe public acts | psychiatric red flags | no guidance
+DEBRIEF:: what happened | interpretation arose | body/emotion | action | result | resonance/disonance | hero update
+```
+
+`safety.compact.md`:
+
+```text
+RISK_GATE:: ask health/psychiatric/legal/context only when needed
+STOP_SIGNS:: psychosis/mania/suicidal ideation/chest pain/fainting/seizure/panic escalating/unsafe public setting
+PUBLIC:: no blocking pathways | no frightening people | no trespass | no humiliation | use safe location
+BREATH:: no water/driving/standing/heights | stop dizziness/chest pain
+COLD:: no solo water immersion | stop numbness/confusion/shivering loss
+SUBSTANCES:: no dose/procure/administer | discuss risks+legal+clinical only
+```
+
+## 13. Tool list
+
+Do not give the agent “general backend access”. Give it narrow tools.
+
+```ts
+get_user_state(userId)
+```
+
+Returns profile, current cycle, ledger summary, memory lines, safety level, last interaction.
+
+```ts
+update_user_profile(userId, patch)
+```
+
+Stores language, cadence, timezone, check-in time, risk tolerance, hero identity fields.
+
+```ts
+run_safety_gate(userId, proposedPractice)
+```
+
+Classifies `GREEN | AMBER | RED`, returns allowed actions, blocked actions, and required warnings.
+
+```ts
+start_practice_cycle(userId, cycleId, cadence)
+```
+
+Creates or resumes a cycle.
+
+```ts
+log_practice_event(userId, event)
+```
+
+Records practice evidence, subjective intensity, resonance score, dissonance score, notes.
+
+```ts
+create_debrief(userId, practiceId, answers)
+```
+
+Transforms raw experience into emotional-cycle analysis.
+
+```ts
+update_memory(userId, memoryPatch)
+```
+
+Rewrites compact memory lines.
+
+```ts
+render_progress_diagram(userId)
+```
+
+Returns Telegram-safe text diagram.
+
+```ts
+create_bridgecrux_report(userId, issue)
+```
+
+Creates EYE report for developer/bridgeclaw.
+
+```ts
+send_telegram_message(chatId, text, options)
+```
+
+Escapes formatting, chunks long responses, sends to Telegram.
+
+The key is that Gemini chooses tools, but code validates tool arguments and safety. The model is not the source of truth for whether a risky practice is allowed.
+
+## 14. Convex schema
+
+Minimal tables:
+
+```ts
+users {
+  telegramUserId: string
+  chatId: string
+  username?: string
+  language: "es" | "en"
+  timezone: string
+  createdAt: number
+  lastSeenAt: number
+}
+
+profiles {
+  userId
+  cadence: "weekly" | "biweekly"
+  checkInHour?: number
+  riskMode: "green_only" | "amber_allowed"
+  heroName?: string
+  villainInternal?: string
+  villainExternal?: string
+  villainPhilosophical?: string
+  resonances?: string[]
+  dissonances?: string[]
+  limits?: string[]
+}
+
+sessions {
+  userId
+  status: "onboarding" | "active" | "paused"
+  currentCycleId?: string
+  currentPracticeId?: string
+  lastModelInteractionId?: string
+}
+
+memories {
+  userId
+  topic: string
+  line: string
+  confidence: number
+  updatedAt: number
+}
+
+practices {
+  userId
+  cycleId: string
+  status: "planned" | "active" | "completed" | "skipped" | "blocked"
+  risk: "GREEN" | "AMBER" | "RED"
+  title: string
+  plan: string
+  createdAt: number
+  completedAt?: number
+}
+
+ledger {
+  userId
+  practiceId
+  date: string
+  eventType: "prep" | "challenge" | "debrief" | "integration" | "recovery"
+  resonance: number
+  dissonance: number
+  evidence: string
+  reward?: string
+  createdAt: number
+}
+
+reports {
+  userId
+  severity: "info" | "bug" | "safety" | "missing_knowledge" | "tool_error"
+  summary: string
+  transcriptExcerpt?: string
+  status: "open" | "resolved"
+  createdAt: number
+}
+```
+
+## 15. Memory system
+
+Memory must not append forever. It must rewrite.
+
+Format:
+
+```text
+identity.hero:: Se ve como “X”; busca control lúcido sin rigidez y juego sin caos.
+risk.profile:: Prefiere GREEN; evitar sustancias, frío intenso y respiración agresiva.
+phase6.current:: Ciclo 2 social-safe; reto elegido: pedir descuento sin presión.
+resonance.nodes:: Resonancia alta con introspección, ritualidad, silencio, retos elegantes.
+dissonance.nodes:: Dissonancia con exposición pública humillante y prácticas fisiológicas bruscas.
+practice.pattern:: Completa mejor prácticas de 10–20 min con debrief inmediato.
+open.loop:: Definir villano filosófico y ritual dionisíaco de cierre.
+```
+
+Proceso diario por cron:
+
+1. Cargar memorias actuales.
+2. Cargar ledger de las últimas 24 horas.
+3. Cargar eventos relevantes de conversación.
+4. Pedir a Gemini una propuesta de memoria nueva en máximo 12 líneas.
+5. Validar que cada línea tenga `topic:: content`.
+6. Reemplazar líneas antiguas por líneas nuevas.
+7. Guardar diff en logs internos.
+
+Convex cron jobs son apropiados para esta reescritura diaria. ([docs.convex.dev][7])
+
+## 16. Agent loop
+
+El orquestador debe hacer esto por cada mensaje:
+
+```text
+1. Recibir Telegram update.
+2. Identificar user/chat.
+3. Guardar inbound message.
+4. Cargar user_state + memory + active crux files.
+5. Compilar prompt:
+   system.prompt.md
+   assistants.md
+   relevant knowledge files
+   synmem user memory
+   recent compact transcript
+   user message
+6. Llamar Gemini con function declarations.
+7. Si Gemini pide tool:
+   validate args
+   run safety if needed
+   execute tool
+   return tool result to model
+8. Generar respuesta final.
+9. Renderizar Telegram-safe.
+10. Guardar outbound.
+```
+
+No permitir loops infinitos. Máximo tres tool calls por turno en MVP. Si no se resuelve, pedir una pregunta de alto apalancamiento o crear report.
+
+## 17. Prompt compiler
+
+El prompt compiler no debe meter todo siempre. Debe usar router:
+
+Siempre cargar:
+
+`system.prompt.md`
+`assistants.md`
+`arqueidentidad.compact.md`
+`fase6.compact.md`
+`safety.compact.md`
+`user.synmem`
+
+Cargar prácticas específicas solo cuando el usuario esté en esa práctica o pregunte por ella.
+
+Ejemplo:
+
+```text
+if currentCycleId === "cycle5_onirotech":
+  include practices/cycle5_onirotech.md
+else:
+  include only practice index line
+```
+
+Eso ejecuta el principio BridgeCrux de pocos archivos, compactos, invocados cuando importan.
+
+## 18. Fase 6 practice files
+
+Cada práctica debe tener el mismo esquema:
+
+```text
+---
+id: cycle2_social_fear
+title: Reto social seguro
+risk: GREEN
+when: usuario en ciclo 2 o pide miedo social
+tools: run_safety_gate, start_practice_cycle, log_practice_event, create_debrief
+---
+
+PURPOSE:: entrenar control apolíneo bajo micro-miedo social sin daño ni humillación
+DO:: elegir reto pequeño | pedir descuento | preguntar dirección | speech 1min en espacio seguro | caminar distinto en sitio seguro
+DONT:: bloquear paso | asustar gente | tirarse al piso en vía pública peligrosa | grabar terceros | coerción social
+PREP:: pre-hypnos 2min | intención | cuerpo relajado | frase del héroe
+EXEC:: acción mínima | observar interpretación automática | no buscar performance
+DEBRIEF:: evento->interpretación->deseo->acción->emoción->resultado | resonancia 1-10 | disonancia 1-10
+INTEGRATE:: qué identidad se fortaleció | qué error no cometió el héroe
+```
+
+`cycle5_onirotech.md` debe incluir dream recall, reality checks y MILD/WBTB moderado, pero debe vigilar sueño, ansiedad y disociación. Galantamina queda como `AMBER/RED`: el bot puede decir que existe y que requiere criterio médico, pero no diseñar un protocolo de uso.
+
+## 19. Onboarding flow
+
+Primera interacción:
+
+```text
+◇ Bienvenido a Arqueidentidad Fase VI.
+Este crux solo tiene activa la Fase VI. Las Fases I–V aparecerán como coming soon.
+Antes de retarte, necesito construir tu contenedor.
+
+1. ¿Quieres cadencia semanal o bi-semanal?
+2. ¿Quieres modo GREEN solamente, o permites prácticas AMBER con advertencias y límites?
+```
+
+Después:
+
+```text
+Nombra tu héroe Fase VI en una frase.
+Ejemplo: “El cartógrafo lúcido del caos”.
+```
+
+Después:
+
+```text
+Define tres villanos:
+interno = patrón que te arrastra
+externo = entorno que te impone identidad
+filosófico = mentira sobre la vida que quieres vencer
+```
+
+Después:
+
+```text
+Elige tu primer ciclo:
+A. Pre-Hypnos + NSDR seguro
+B. Reto social seguro
+C. Onirotecnología suave
+D. Juego dionisíaco no estructurado
+```
+
+El bot debe guardar todo con herramientas, no solo responder.
+
+## 20. Cómo adaptar “BEST ANSWER PROMPT” al tutor
+
+El prompt BEST ANSWER no debe aparecer entero en cada respuesta. Debe convertirse en constitución:
+
+```text
+REAL_NEED:: literal query is evidence; infer actual goal; name interpretation briefly only if useful
+BREAK_ASSUMPTION:: surface only if false assumption breaks answer
+OUTSIDE_BRIDGE:: use cross-domain analogy only if it changes decision
+VALUE_SENTENCES:: every sentence must change knowledge/thought/action
+POSITION:: recommend, do not hide behind options
+MECHANISM:: claims need why
+TRUST:: distinguish known/inferred/speculative
+END:: stop at next real obstacle
+```
+
+En UX real, eso se traduce así:
+
+Usuario: “quiero hacer psilocibina para fase 6.”
+Bot: “Interpreto que buscas una experiencia dionisíaca fuerte para romper rigidez, no necesariamente una sustancia. No puedo guiar dosis ni uso; sí puedo construir una alternativa legal y no farmacológica que preserve la función: liminalidad, pérdida controlada de rigidez, debrief e integración.”
+
+Ese es el estilo correcto.
+
+## 21. BridgeCrux como futuro SDK
+
+El MVP debe dejar extraíble esto:
+
+```ts
+const arqueidentidad = createCrux({
+  id: "arqueidentidad-fase6",
+  language: "es",
+  systemPrompt: "./cruxes/arqueidentidad-fase6/system.prompt.md",
+  assistantRouter: "./cruxes/arqueidentidad-fase6/assistants.md",
+  knowledgeDir: "./cruxes/arqueidentidad-fase6/knowledge",
+  practicesDir: "./cruxes/arqueidentidad-fase6/practices",
+  memorySchema: "./cruxes/arqueidentidad-fase6/memory/schema.md",
+  tools: [
+    getUserState,
+    updateUserProfile,
+    runSafetyGate,
+    startPracticeCycle,
+    logPracticeEvent,
+    createDebrief,
+    updateMemory,
+    renderProgressDiagram,
+    createBridgeCruxReport,
+  ],
+});
+```
+
+Luego otro crux sería:
+
+```ts
+const winterlake = createCrux({
+  id: "winterlake",
+  ...
+});
+```
+
+El SDK mínimo debe abstraer:
+
+`promptCompiler`
+`smartRouter`
+`toolRegistry`
+`memoryRewriter`
+`safetyGate`
+`telegramRenderer`
+`reporter/EYE`
+
+Eso convierte este proyecto en primera prueba real de BridgeCrux, no en un bot aislado.
+
+## 22. Implementation milestones para Codex
+
+Milestone 1: Skeleton.
+
+Crear repo, instalar Convex, `@google/genai`, Telegram send helper, `.env.example`, schema básico.
+
+Milestone 2: Telegram webhook.
+
+Implementar `convex/http.ts` con endpoint `/telegram/webhook`, validar secret, parsear mensajes, responder “pong” básico.
+
+Milestone 3: Gemini call.
+
+Implementar `callModel.ts` con modelo configurable, system prompt compilado, memory injected, respuesta simple.
+
+Milestone 4: Tools.
+
+Crear tool registry y cinco herramientas iniciales: `get_user_state`, `update_user_profile`, `start_practice_cycle`, `log_practice_event`, `render_progress_diagram`.
+
+Milestone 5: Safety gate.
+
+Agregar `run_safety_gate` antes de cualquier práctica AMBER/RED.
+
+Milestone 6: Onboarding.
+
+Hacer `/start`, perfil, cadencia, risk mode, hero name, villanos.
+
+Milestone 7: Practice cycle.
+
+Implementar Ciclo 1 y Ciclo 2 completos. No intentar todos los ciclos antes de que el harness funcione.
+
+Milestone 8: Memory rewrite.
+
+Implementar `memories` + cron diario + comando `/memory`.
+
+Milestone 9: EYE report.
+
+Implementar `/report` y creación automática de reportes tras errores repetidos.
+
+Milestone 10: BridgeCrux extraction.
+
+Mover código reusable a `bridgecrux/core` y dejar Arqueidentidad como crux config.
+
+## 23. Acceptance criteria
+
+El MVP está listo cuando se pueda hacer esto desde Telegram:
+
+Un usuario escribe `/start`.
+
+El bot explica que solo Fase VI está activa.
+
+El bot crea perfil y memoria inicial.
+
+El usuario elige cadencia semanal.
+
+El usuario define héroe y villanos.
+
+El usuario inicia Ciclo 1.
+
+El bot propone práctica GREEN.
+
+El usuario reporta ejecución.
+
+El bot registra ledger.
+
+El bot genera debrief por ciclo emocional.
+
+El bot muestra diagrama de progreso.
+
+El cron reescribe memoria compacta.
+
+El usuario escribe `/memory` y ve líneas compactas mejores que las originales.
+
+El usuario pide una práctica con psilocibina/DMT.
+
+El bot no guía uso, no da dosis, no da adquisición, y ofrece una alternativa dionisíaca no farmacológica.
+
+El usuario reporta un bug.
+
+El bot crea un EYE report.
+
+## 24. Primer prompt para pasarle a Codex
+
+```text
+Build the MVP for a Telegram-first BridgeCrux called arqueidentidad-fase6.
+
+Use TypeScript, Convex, Telegram Bot API, and @google/genai.
+
+No frontend.
+
+Create a reusable bridgecrux/core layer and one crux content folder at cruxes/arqueidentidad-fase6.
+
+The active domain is Arqueidentidad Fase VI only. Fases I–V must be listed as coming soon. Use the supplied Arqueidentidad/Fase VI notes as compact knowledge files, not as a large prompt dump.
+
+Implement:
+- Convex schema for users, profiles, sessions, memories, practices, ledger, reports.
+- Convex HTTP Action /telegram/webhook for Telegram.
+- Telegram sendMessage helper with safe formatting.
+- Gemini client with configurable GEMINI_MODEL, GEMINI_TEMPERATURE, GEMINI_TOP_P, GEMINI_THINKING_LEVEL.
+- Default model should be env-configurable; use current Gemini Flash-Lite model name unless overridden.
+- Prompt compiler that loads system.prompt.md, assistants.md, compact knowledge, user memory, and relevant practice file.
+- Tool registry with specific tools only:
+  get_user_state
+  update_user_profile
+  run_safety_gate
+  start_practice_cycle
+  log_practice_event
+  create_debrief
+  update_memory
+  render_progress_diagram
+  create_bridgecrux_report
+  send_telegram_message
+- Onboarding flow with cadence, risk mode, hero name, internal/external/philosophical villain.
+- Practice cycles 0, 1, 2 fully implemented.
+- Memory rewrite cron that rewrites compact one-line memories instead of appending.
+- EYE report generation for repeated tool/model errors.
+- Safety gate: never provide operational illegal drug guidance, dosing, procurement, or medical prescriptions; risky physiological practices require AMBER warnings; RED practices are blocked and redirected to safe alternatives.
+
+Use Spanish as default bot language.
+Keep files compact.
+Prefer specific tools over generic actions.
+Show progress through Telegram text diagrams.
+```
+
+## 25. The build order I would actually follow
+
+Do not start by perfecting Fase VI content. Start by proving the harness.
+
+First build Telegram → Convex → Gemini → one tool → Telegram response.
+
+Then build memory.
+
+Then build safety.
+
+Then build one practice cycle.
+
+Then make the router elegant.
+
+Then add the rest of Fase VI.
+
+The first real “BridgeCrux standard” should be this invariant:
+
+`Every crux = compact constitution + compact knowledge + specific tools + memory rewriter + EYE report + interface renderer`
+
+Arqueidentidad Fase VI is just the first domain proving that invariant.
+
+[1]: https://github.com/google-gemini/gemini-skills/blob/main/skills/gemini-interactions-api/SKILL.md "gemini-skills/skills/gemini-interactions-api/SKILL.md at main · google-gemini/gemini-skills · GitHub"
+[2]: https://docs.convex.dev/functions/http-actions?utm_source=chatgpt.com "HTTP Actions | Convex Developer Hub"
+[3]: https://core.telegram.org/bots/api "Telegram Bot API"
+[4]: https://ai.google.dev/gemini-api/docs/function-calling "Function calling with the Gemini API  |  Google AI for Developers"
+[5]: https://github.com/google-gemini/gemini-skills/blob/main/skills/gemini-api-dev/SKILL.md "gemini-skills/skills/gemini-api-dev/SKILL.md at main · google-gemini/gemini-skills · GitHub"
+[6]: https://www.nccih.nih.gov/health/psilocybin-for-mental-health-and-addiction-what-you-need-to-know?utm_source=chatgpt.com "Psilocybin for Mental Health and Addiction: What You Need To Know | NCCIH"
+[7]: https://docs.convex.dev/scheduling/cron-jobs "Cron Jobs | Convex Developer Hub"
