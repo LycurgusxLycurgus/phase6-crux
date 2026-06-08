@@ -1,0 +1,26 @@
+{
+  "name": "arqueidentidad-fase6-crux",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Telegram-first BridgeCrux MVP for Arqueidentidad Fase VI.",
+  "scripts": {
+    "dev": "npm run build:crux-content && node ./node_modules/convex/bin/main.js dev",
+    "codegen": "npm run build:crux-content && node ./node_modules/convex/bin/main.js codegen",
+    "build:crux-content": "node scripts/build-crux-content.mjs",
+    "check": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "test": "node ./node_modules/vitest/vitest.mjs run",
+    "build": "npm run build:crux-content && npm run check && npm run test"
+  },
+  "dependencies": {
+    "@google/genai": "1.52.0",
+    "convex": "1.37.0"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "4.1.5"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
