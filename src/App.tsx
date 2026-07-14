@@ -4,7 +4,7 @@ import React, { type CSSProperties, type ReactNode, useEffect, useRef, useState 
 import { api } from "../convex/_generated/api";
 
 type MainPath = "/hoy" | "/camino" | "/mapa" | "/historial" | "/mas";
-type Path = MainPath | "/habitos" | "/conocimiento" | "/ajustes" | "/acceso";
+type Path = MainPath | "/habitos" | "/conocimiento" | "/ajustes" | "/acceso" | "/reinicio";
 type AccessStatus = "preparing" | "invalid" | "used" | "expired" | "revoked" | "recoverable";
 
 const mainPaths = new Set<MainPath>(["/hoy", "/camino", "/mapa", "/historial", "/mas"]);
@@ -76,6 +76,16 @@ function AccessView({ path, navigate }: { path: Path; navigate: Navigate }) {
         setStatus(accessStatusFromError(error));
       });
   }, [path, signIn]);
+
+  if (path === "/reinicio") {
+    return (
+      <StateView
+        title="Tu espacio quedó en cero"
+        detail="Eliminamos tu mapa, prácticas, hábitos, historial y memoria. Vuelve a Telegram para comenzar otra vez desde la introducción."
+        action={<button className="btn-primary" onClick={returnToTelegram}>Volver a Telegram</button>}
+      />
+    );
+  }
 
   if (!hasToken && path !== "/acceso") {
     return (
@@ -261,7 +271,23 @@ function HistoryView() {
 function MoreView({ navigate }: { navigate: Navigate }) {
   const { signOut } = useAuthActions();
   const [confirm, setConfirm] = useState(false);
+  const resetData = useMutation(api.web.resetAllUserData);
+  const [resetStage, setResetStage] = useState<0 | 1 | 2>(0);
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
   async function logout() { await signOut(); navigate("/acceso", true); }
+  async function resetAllData() {
+    setResetting(true);
+    setResetError(null);
+    try {
+      await resetData({ confirmation: "DELETE_ALL_USER_DATA" });
+      try { await signOut(); } catch { /* The reset already revoked this session. */ }
+      navigate("/reinicio", true);
+    } catch {
+      setResetError("No pudimos borrar tus datos. Nada quedó a medias; inténtalo de nuevo.");
+      setResetting(false);
+    }
+  }
   return (
     <main className="view-container">
       <ViewHeader eyebrow="Tu espacio" title="Más" />
@@ -279,6 +305,31 @@ function MoreView({ navigate }: { navigate: Navigate }) {
           <p className="state-subtext">Tu progreso se mantiene. Necesitarás otro enlace para volver.</p>
           <div className="logout-actions"><button className="btn-secondary" onClick={() => setConfirm(false)}>Cancelar</button><button className="btn-primary" onClick={() => void logout()}>Cerrar sesión</button></div>
         </div>
+      )}
+      <div className="mas-divider" />
+      {resetStage === 0 && <button className="mas-row destructive" onClick={() => { setResetError(null); setResetStage(1); }}>Borrar mis datos y empezar de nuevo</button>}
+      {resetStage === 1 && (
+        <section className="danger-confirm" aria-labelledby="reset-first-title">
+          <p className="danger-eyebrow">Zona irreversible</p>
+          <h2 id="reset-first-title">¿Quieres borrar todo tu proceso?</h2>
+          <p>Se eliminarán tu mapa, respuestas de inicio, prácticas, hábitos, historial, memoria y conversación guardada. No podrás recuperarlos.</p>
+          <div className="danger-actions">
+            <button className="btn-secondary" onClick={() => setResetStage(0)}>Cancelar</button>
+            <button className="btn-danger-outline" onClick={() => setResetStage(2)}>Entiendo, continuar</button>
+          </div>
+        </section>
+      )}
+      {resetStage === 2 && (
+        <section className="danger-confirm final" aria-labelledby="reset-final-title" aria-live="polite">
+          <p className="danger-eyebrow">Última confirmación</p>
+          <h2 id="reset-final-title">Esta acción no se puede deshacer</h2>
+          <p>Al confirmar, se cerrarán tus accesos web y la próxima conversación en Telegram comenzará desde cero.</p>
+          {resetError && <p className="inline-error" role="alert">{resetError}</p>}
+          <div className="danger-actions">
+            <button className="btn-secondary" disabled={resetting} onClick={() => setResetStage(0)}>Cancelar</button>
+            <button className="btn-danger" disabled={resetting} onClick={() => void resetAllData()}>{resetting ? "Borrando…" : "Sí, borrar todo"}</button>
+          </div>
+        </section>
       )}
     </main>
   );

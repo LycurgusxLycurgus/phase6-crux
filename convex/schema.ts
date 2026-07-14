@@ -77,6 +77,7 @@ export default defineSchema({
     status: v.union(v.literal("onboarding"), v.literal("active"), v.literal("paused")),
     onboardingStep: v.optional(
       v.union(
+        v.literal("introduction"),
         v.literal("cadence"),
         v.literal("initial_identity"),
         v.literal("hero"),

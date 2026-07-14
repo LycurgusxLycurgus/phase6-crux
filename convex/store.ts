@@ -59,7 +59,7 @@ export const ensureTelegramUser = internalMutation({
       await ctx.db.insert("sessions", {
         userId,
         status: "onboarding",
-        onboardingStep: "cadence",
+        onboardingStep: "introduction",
         updatedAt: now,
       });
     }
@@ -338,6 +338,7 @@ export const updateSession = internalMutation({
     userId: v.id("users"),
     status: v.optional(v.union(v.literal("onboarding"), v.literal("active"), v.literal("paused"))),
     onboardingStep: v.optional(v.union(
+      v.literal("introduction"),
       v.literal("cadence"),
       v.literal("initial_identity"),
       v.literal("hero"),

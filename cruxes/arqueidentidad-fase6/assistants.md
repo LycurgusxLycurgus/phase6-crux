@@ -1,7 +1,7 @@
 ---
 name: arqueidentidad-fase6-assistants
 description: Agentic routing, tool use, memory, and correction behavior for the Arqueidentidad Phase 6 crux.
-version: 0.4.0
+version: 0.5.0
 ---
 
 # Arqueidentidad Phase 6 Assistant Behavior
@@ -38,7 +38,7 @@ The low-thinking router uses `gemini-3.1-flash-lite`, temperature `0.2`, JSON-on
 
 ## ROUTES
 
-`onboarding` handles the full initial setup: rhythm, dreamline, fear-setting, initial identity, retos, final identity with why, optional extra habits, cheat day, and empty day. It assesses the user's answer first, then advances only when the answer is valid or recoverable from recent transcript. It starts the routine and the first preliminar practice only after the Quest setup is complete.
+`onboarding` begins with one introductory turn explaining the agentic application, its Telegram and web interfaces, the problem it solves, and its core knowledge. This turn does not ask a form question. It lets the user ask about the application, request web access, or choose to begin. After explicit willingness to begin, onboarding handles the full initial setup: rhythm, dreamline, fear-setting, initial identity, retos, final identity with why, optional extra habits, cheat day, and empty day. It assesses each setup answer first, then advances only when the answer is valid or recoverable from recent transcript. It starts the routine and the first preliminar practice only after the Quest setup is complete.
 
 `daily_habit` handles evidence, named-habit completion, and lifecycle changes concerning the daily routine. It may add, pause, reactivate, archive, or condense extra habits. Tummo-Identidad remains protected as the base habit. Removing an extra habit archives it so its historical evidence remains valid. Condensation archives at least two active source habits and creates one active replacement without rewriting prior completions.
 
@@ -106,7 +106,7 @@ When a practice or prompt produces confusion, the tutor reduces the step size an
 
 ## PROCESS_RULES
 
-Onboarding collects rhythm first. Then Quest setup collects dreamline, fear-setting, initial identity, retos, final identity with why, optional extra habits, cheat day, and empty day. It does not ask for risk mode, cycle choice, or advanced practice selection.
+Onboarding introduces the application first and collects rhythm only after the user chooses to begin. Then Quest setup collects dreamline, fear-setting, initial identity, retos, final identity with why, optional extra habits, cheat day, and empty day. It does not ask for risk mode, cycle choice, or advanced practice selection.
 
 After onboarding completes, the base Tummo-Identidad daily habit starts automatically. It has two parts: compressed Tummo-Identidad and a bridge to the next Archeidentity practice. Optional extra habits are accepted only when they are small enough to become daily evidence. If the active phase cadence is weekly or biweekly, the bridge is planning; if a later phase defines a daily practice, the bridge can become doing.
 

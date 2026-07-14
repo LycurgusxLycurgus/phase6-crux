@@ -99,11 +99,24 @@ button { color: inherit; }
 .mas-group { margin: 0; }
 .mas-row { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; padding: 0; border: 0; border-bottom: 1px solid var(--rule); background: transparent; cursor: pointer; text-align: left; }
 .mas-row.danger { justify-content: flex-start; color: var(--accent); }
+.mas-row.destructive { justify-content: flex-start; color: var(--accent-dark); font-weight: 600; }
 .logout-confirm { padding: 24px; background: var(--surface); text-align: center; }
 .logout-actions { display: grid; margin-top: 18px; gap: 10px; grid-template-columns: 1fr 1fr; }
 .logout-actions button { margin: 0; min-width: 0; }
 .reflective-text { font-size: 1.5rem; line-height: 1.15; }
 .state-subtext { max-width: 300px; margin: 12px auto 24px; color: var(--muted); font-size: .88rem; }
+.danger-confirm { margin-top: 18px; padding: 24px 0; border-top: 2px solid var(--accent-dark); border-bottom: 1px solid var(--accent-dark); }
+.danger-confirm.final { background: var(--surface); padding-inline: 18px; }
+.danger-confirm h2 { margin: 6px 0 12px; color: var(--accent-dark); font-family: var(--serif); font-size: 1.55rem; font-weight: 600; line-height: 1.15; }
+.danger-confirm p { margin: 0; color: var(--muted); line-height: 1.5; }
+.danger-confirm .danger-eyebrow { color: var(--accent-dark); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.danger-actions { display: grid; margin-top: 20px; gap: 10px; grid-template-columns: 1fr 1fr; }
+.danger-actions button { width: 100%; min-width: 0; min-height: 50px; margin: 0; padding: 11px 12px; border-radius: 2px; cursor: pointer; }
+.btn-danger, .btn-danger-outline { border: 1px solid var(--accent-dark); color: var(--accent-dark); }
+.btn-danger { background: var(--accent-dark); color: white; }
+.btn-danger-outline { background: transparent; }
+.btn-danger:hover { background: #6f291f; }
+.btn-danger:disabled, .btn-danger-outline:disabled { cursor: wait; opacity: .65; }
 
 .state-container { display: flex; min-height: 68dvh; align-items: center; justify-content: center; padding: 40px 4px; flex-direction: column; text-align: center; }
 .state-mark, .state-spinner { display: grid; width: 62px; height: 62px; margin-bottom: 28px; place-items: center; border: 1px solid var(--rule); border-radius: 50%; color: var(--accent); font-family: var(--serif); font-size: 2rem; }

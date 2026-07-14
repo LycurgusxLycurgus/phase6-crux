@@ -12,6 +12,7 @@ import {
   getToolDeclarations,
   isAgentToolAuthorized,
   isIdentityMapCorrectionSignal,
+  isNaturalWebAccessRequest,
   normalizeMemoryLines,
   parseCadence,
   parseCycleChoice,
@@ -432,7 +433,7 @@ async function handleTurn(
   }
 
   if (state.session?.status === "onboarding") {
-    return await handleOnboardingStep(ctx, userId, text, state);
+    return await handleOnboardingStep(ctx, userId, chatId, text, state);
   }
 
   if (route.route === "practice_history" || route.intent === "inspect_practice_history") {
@@ -588,7 +589,7 @@ async function handleCommand(
 
   switch (command) {
     case "/start":
-      return state.session?.status === "onboarding" && state.session.onboardingStep === "cadence" && !state.profile?.cadence
+      return state.session?.status === "onboarding" && state.session.onboardingStep === "introduction" && !state.profile?.cadence
         ? await startOnboarding(ctx, userId)
         : await renderFullStatus(ctx, userId);
     case "/learn":
@@ -678,17 +679,9 @@ async function startOnboarding(
   await ctx.runMutation(internal.store.updateSession, {
     userId,
     status: "onboarding",
-    onboardingStep: "cadence",
+    onboardingStep: "introduction",
   });
-
-  return [
-    "Bienvenido a Arqueidentidad Fase VI.",
-    "Esta version trabaja solo Fase VI. Las otras fases apareceran despues.",
-    "",
-    "Antes de empezar, quiero conocerte un poco para proponerte practicas que tengan sentido para ti.",
-    "",
-    explainCadenceStep(),
-  ].join("\n");
+  return renderAppIntroduction();
 }
 
 async function renderFullStatus(ctx: ActionCtx, userId: Id<"users">): Promise<string> {
@@ -986,7 +979,7 @@ async function renderEmptyDayCommand(ctx: ActionCtx, userId: Id<"users">): Promi
 
 function shouldAutostartOnboarding(state: CruxState): boolean {
   if (state.session?.status !== "onboarding") return false;
-  if (state.session.onboardingStep !== "cadence") return false;
+  if (state.session.onboardingStep !== "introduction") return false;
   if (state.profile?.cadence) return false;
   const messages = state.recentMessages ?? [];
   const inboundCount = messages.filter((message) => message.direction === "inbound").length;
@@ -997,10 +990,31 @@ function shouldAutostartOnboarding(state: CruxState): boolean {
 async function handleOnboardingStep(
   ctx: ActionCtx,
   userId: Id<"users">,
+  chatId: string,
   text: string,
   state: CruxState,
 ): Promise<string> {
-  const step = state.session?.onboardingStep ?? "cadence";
+  const step = state.session?.onboardingStep ?? "introduction";
+
+  if (step === "introduction") {
+    if (isIntroductionContinueSignal(text)) {
+      await ctx.runMutation(internal.store.updateSession, { userId, onboardingStep: "cadence" });
+      return [
+        "Empecemos. Primero voy a ajustar el ritmo para que el proceso tenga espacio real en tu vida.",
+        "",
+        explainCadenceStep(),
+      ].join("\n");
+    }
+    return await runTutorAgentTurn(ctx, userId, chatId, text, state, {
+      route: "knowledge_question",
+      intent: "ask_concept",
+      confidence: 1,
+      needsHighThinking: true,
+      safetyFlag: "none",
+      stateMutationCandidate: "none",
+      reason: "introductory question before onboarding",
+    });
+  }
 
   if (step === "cadence") {
     const assessment = await assessCadenceAnswer(text, state);
@@ -2011,9 +2025,7 @@ function intentFromValue(value: unknown): CruxIntent | undefined {
 }
 
 function isOpenWebAppRequest(normalized: string): boolean {
-  const asksForAccess = /\b(abrir|abre|entrar|entra|acceder|acceso|enlace|link|ver|quiero)\b/.test(normalized);
-  const namesWebSurface = /\b(app|aplicacion|web|pagina|sitio|espacio web)\b/.test(normalized);
-  return asksForAccess && namesWebSurface && !isRevokeWebAccessRequest(normalized);
+  return isNaturalWebAccessRequest(normalized);
 }
 
 function isRevokeWebAccessRequest(normalized: string): boolean {
@@ -3105,6 +3117,7 @@ function renderSettings(state: CruxState): string {
 }
 
 function onboardingStepCopy(step: string | undefined): string {
+  if (step === "introduction") return "introduccion";
   if (step === "cadence") return "ritmo de trabajo";
   if (step === "dreamline") return "dreamline";
   if (step === "fear_setting") return "fear-setting";
@@ -3115,6 +3128,27 @@ function onboardingStepCopy(step: string | undefined): string {
   if (step === "routine_days") return "cheat day y dia vacio";
   if (step === "complete") return "completo";
   return "inicio";
+}
+
+function renderAppIntroduction(): string {
+  return [
+    "Bienvenido a Arqueidentidad Fase VI.",
+    "",
+    "Esta es una aplicacion agentica para entrenar identidades elegidas: convertir interpretaciones, habitos y experiencias en evidencia de la persona que quieres aprender a ser.",
+    "",
+    "Puedes usarla de dos formas conectadas:",
+    "- aqui en Telegram, hablando con naturalidad; yo entiendo lo que necesitas, te explico, registro cambios y te acompano en las practicas",
+    "- en la aplicacion web, donde puedes ver tu rutina, camino, mapa e historial",
+    "",
+    "El metodo trabaja con la identidad como una red de creencias y comportamientos. Usa interpretaciones elegidas, el ciclo de vacio, microtematicas e hipertematicas para reducir autocoercion y volver practicable una transformacion.",
+    "",
+    "No necesitas aprender comandos. Puedes preguntarme como funciona, pedirme que abra la aplicacion web o decirme que quieres empezar.",
+  ].join("\n");
+}
+
+function isIntroductionContinueSignal(text: string): boolean {
+  const normalized = normalizeTelegramText(text);
+  return /\b(empecemos|empezar|comencemos|comenzar|iniciar|iniciemos|listo|lista|dale|vamos|continuar|continua)\b/.test(normalized);
 }
 
 function renderHelp(): string {

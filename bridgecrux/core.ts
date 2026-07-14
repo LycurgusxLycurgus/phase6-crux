@@ -53,9 +53,17 @@ export interface CruxProfile {
 
 export interface CruxSession {
   status: "onboarding" | "active" | "paused";
-  onboardingStep?: "cadence" | "dreamline" | "fear_setting" | "initial_identity" | "villains" | "hero" | "extra_habits" | "routine_days" | "complete";
+  onboardingStep?: "introduction" | "cadence" | "dreamline" | "fear_setting" | "initial_identity" | "villains" | "hero" | "extra_habits" | "routine_days" | "complete";
   currentCycleId?: string;
   currentPracticeId?: string;
+}
+
+export function isNaturalWebAccessRequest(input: string): boolean {
+  const normalized = normalizeForSignal(input);
+  const asksForAccess = /\b(abrir|abre|entrar|entra|acceder|acceso|enlace|link|llevar|llevame|mostrar|muestrame|ver|quiero|usar)\b/.test(normalized);
+  const namesWebSurface = /\b(app|aplicacion|web|pagina|sitio|espacio web|interfaz|panel|dashboard)\b/.test(normalized);
+  const asksToClose = /\b(cerrar|cierra|revocar|revoca|desconectar|desconecta|salir|bloquear|bloquea)\b/.test(normalized);
+  return asksForAccess && namesWebSurface && !asksToClose;
 }
 
 export interface CruxState {

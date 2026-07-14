@@ -289,6 +289,80 @@ export const updateSettings = mutation({
   },
 });
 
+export const resetAllUserData = mutation({
+  args: { confirmation: v.literal("DELETE_ALL_USER_DATA") },
+  handler: async (ctx) => {
+    const { userId, sessionId } = await requireWebUser(ctx);
+    const [
+      profiles,
+      domainSessions,
+      webLoginLinks,
+      memories,
+      practices,
+      ledger,
+      dailyHabits,
+      dailyHabitCompletions,
+      dailyHabitCheckins,
+      messages,
+      routerDecisions,
+      reports,
+      authSessions,
+      authAccounts,
+    ] = await Promise.all([
+      ctx.db.query("profiles").withIndex("by_user", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("sessions").withIndex("by_user", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("webLoginLinks").withIndex("by_user_created", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("memories").withIndex("by_user", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("practices").withIndex("by_user", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("ledger").withIndex("by_user_created", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("dailyHabits").withIndex("by_user", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("dailyHabitCompletions").withIndex("by_user_created", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("dailyHabitCheckins").withIndex("by_user_date_window", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("messages").withIndex("by_user_created", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("routerDecisions").withIndex("by_user_created", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("reports").withIndex("by_user_created", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("authSessions").withIndex("userId", (q) => q.eq("userId", userId)).collect(),
+      ctx.db.query("authAccounts").withIndex("userIdAndProvider", (q) => q.eq("userId", userId)).collect(),
+    ]);
+
+    const otherAuthSessions = authSessions.filter((session) => session._id !== sessionId);
+    const refreshTokens = (await Promise.all(otherAuthSessions.map((session) =>
+      ctx.db.query("authRefreshTokens").withIndex("sessionId", (q) => q.eq("sessionId", session._id)).collect()
+    ))).flat();
+    const verificationCodes = (await Promise.all(authAccounts.map((account) =>
+      ctx.db.query("authVerificationCodes").withIndex("accountId", (q) => q.eq("accountId", account._id)).collect()
+    ))).flat();
+
+    for (const document of ledger) await ctx.db.delete(document._id);
+    for (const document of dailyHabitCompletions) await ctx.db.delete(document._id);
+    for (const document of dailyHabitCheckins) await ctx.db.delete(document._id);
+    for (const document of dailyHabits) await ctx.db.delete(document._id);
+    for (const document of practices) await ctx.db.delete(document._id);
+    for (const document of memories) await ctx.db.delete(document._id);
+    for (const document of messages) await ctx.db.delete(document._id);
+    for (const document of routerDecisions) await ctx.db.delete(document._id);
+    for (const document of reports) await ctx.db.delete(document._id);
+    for (const document of webLoginLinks) await ctx.db.delete(document._id);
+    for (const document of profiles) await ctx.db.delete(document._id);
+    for (const document of domainSessions) await ctx.db.delete(document._id);
+    for (const document of verificationCodes) await ctx.db.delete(document._id);
+    for (const document of authAccounts) await ctx.db.delete(document._id);
+    for (const document of refreshTokens) await ctx.db.delete(document._id);
+    for (const document of otherAuthSessions) await ctx.db.delete(document._id);
+
+    const now = Date.now();
+    await ctx.db.insert("profiles", { userId, limits: [], updatedAt: now });
+    await ctx.db.insert("sessions", {
+      userId,
+      status: "onboarding",
+      onboardingStep: "introduction",
+      updatedAt: now,
+    });
+
+    return { ok: true, onboardingStep: "introduction" as const };
+  },
+});
+
 function routineDto(state: DailyRoutineState) {
   return {
     localDate: state.localDate,

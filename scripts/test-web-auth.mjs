@@ -32,6 +32,7 @@ if (call("auth:signIn", authArgs(firstToken)).ok) {
 const secondUser = must("webPreview:seedPreviewAccess", { label: "auth-regression-other-user" });
 const secondSignIn = must("auth:signIn", authArgs(tokenFromUrl(secondUser.url)));
 await assertCrossUserIsolation(firstSignIn.tokens.token, secondSignIn.tokens.token);
+await assertFullResetWorkflow();
 
 const supersededToken = tokenFromUrl(must("webAuth:issueWebLoginLink", { userId }).url);
 const currentToken = tokenFromUrl(must("webAuth:issueWebLoginLink", { userId }).url);
@@ -54,7 +55,7 @@ if (call("auth:signIn", authArgs(expiredToken)).ok) {
 }
 
 must("webAuth:revokeAllWebAccess", { userId });
-console.log("Web auth regression passed: issue, exchange, single use, supersession, expiration, revocation, and cross-user isolation.");
+console.log("Web auth regression passed: issue, exchange, single use, supersession, expiration, revocation, cross-user isolation, and full user reset.");
 
 function authArgs(token) {
   return { provider: "telegram-link", params: { token }, calledBy: "auth-regression" };
@@ -93,6 +94,48 @@ async function assertCrossUserIsolation(firstAuthToken, secondAuthToken) {
   ]);
   if (firstAfter.progress.completed === 0 || secondAfter.progress.completed !== 0) {
     throw new Error("A web mutation crossed the authenticated user boundary");
+  }
+}
+
+async function assertFullResetWorkflow() {
+  const deploymentUrl = readLocalEnv("CONVEX_URL");
+  const seededReset = must("webPreview:seedPreviewAccess", { label: "auth-regression-reset" });
+  const resetSignIn = must("auth:signIn", authArgs(tokenFromUrl(seededReset.url)));
+  const resetClient = new ConvexHttpClient(deploymentUrl);
+  resetClient.setAuth(resetSignIn.tokens.token);
+
+  await resetClient.mutation(api.web.resetAllUserData, { confirmation: "DELETE_ALL_USER_DATA" });
+  const [resetBootstrap, resetHabits, resetHistory] = await Promise.all([
+    resetClient.query(api.web.getBootstrap, {}),
+    resetClient.query(api.web.getHabits, {}),
+    resetClient.query(api.web.getHistory, {}),
+  ]);
+  if (resetBootstrap.onboarding.complete || resetBootstrap.onboarding.step !== "introduction") {
+    throw new Error("The reset did not restore the first introductory onboarding step");
+  }
+  if (resetHabits.length !== 0 || resetHistory.items.length !== 0) {
+    throw new Error("The reset preserved routine or history data");
+  }
+
+  must("webAuth:revokeAllWebAccess", { userId: seededReset.userId });
+  let oldSessionRejected = false;
+  try { await resetClient.query(api.web.getBootstrap, {}); } catch { oldSessionRejected = true; }
+  if (!oldSessionRejected) throw new Error("Revocation after reset left the browser session active");
+
+  const renewedUrl = must("webAuth:issueWebLoginLink", { userId: seededReset.userId }).url;
+  const renewedSignIn = must("auth:signIn", authArgs(tokenFromUrl(renewedUrl)));
+  const renewedClient = new ConvexHttpClient(deploymentUrl);
+  renewedClient.setAuth(renewedSignIn.tokens.token);
+  const [bootstrap, habits, history] = await Promise.all([
+    renewedClient.query(api.web.getBootstrap, {}),
+    renewedClient.query(api.web.getHabits, {}),
+    renewedClient.query(api.web.getHistory, {}),
+  ]);
+  if (bootstrap.onboarding.complete || bootstrap.onboarding.step !== "introduction") {
+    throw new Error("The reset did not restore the first introductory onboarding step");
+  }
+  if (habits.length !== 0 || history.items.length !== 0) {
+    throw new Error("The reset preserved routine or history data");
   }
 }
 

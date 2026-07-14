@@ -6,6 +6,7 @@ import {
   classifyPracticeRequest,
   compilePrompt,
   isAgentToolAuthorized,
+  isNaturalWebAccessRequest,
   normalizeMemoryLines,
   parseCadence,
   parseCycleChoice,
@@ -42,6 +43,14 @@ describe("BridgeCrux core", () => {
   it("parses onboarding answers", () => {
     expect(parseCadence("prefiero quincenal")).toBe("biweekly");
     expect(parseCycleChoice("B social")).toBe("cycle2_social_fear");
+  });
+
+  it("recognizes natural requests to enter the web interface", () => {
+    expect(isNaturalWebAccessRequest("quiero abrir la app")).toBe(true);
+    expect(isNaturalWebAccessRequest("llévame al panel web")).toBe(true);
+    expect(isNaturalWebAccessRequest("muéstrame la interfaz")).toBe(true);
+    expect(isNaturalWebAccessRequest("explícame cómo funciona la aplicación")).toBe(false);
+    expect(isNaturalWebAccessRequest("cierra mis sesiones web")).toBe(false);
   });
 
   it("parses villain labels with accents and natural separators", () => {
