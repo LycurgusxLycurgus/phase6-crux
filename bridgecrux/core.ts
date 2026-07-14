@@ -1,3 +1,5 @@
+import type { DailyHabitDefinition } from "./habits";
+
 export type Cadence = "weekly" | "biweekly";
 
 export interface MemoryLine {
@@ -18,6 +20,29 @@ export interface LedgerSummary {
 export interface CruxProfile {
   cadence?: Cadence;
   timezone?: string;
+  routineStartDate?: string;
+  cheatDayOfWeek?: number;
+  emptyDayOfWeek?: number;
+  emptyDayEnabled?: boolean;
+  dreamline?: {
+    have: string;
+    do: string;
+    be: string;
+  };
+  fearSetting?: {
+    whatIf: string;
+    prevent: string;
+    repair: string;
+    partialWins: string;
+    cost6Months: string;
+    cost1Year: string;
+    cost3Years: string;
+  };
+  initialIdentity?: {
+    name: string;
+    behavior: string;
+    belief: string;
+  };
   heroName?: string;
   heroWhy?: string;
   villainInternal?: string;
@@ -28,7 +53,7 @@ export interface CruxProfile {
 
 export interface CruxSession {
   status: "onboarding" | "active" | "paused";
-  onboardingStep?: "cadence" | "hero" | "villains" | "complete";
+  onboardingStep?: "cadence" | "dreamline" | "fear_setting" | "initial_identity" | "villains" | "hero" | "extra_habits" | "routine_days" | "complete";
   currentCycleId?: string;
   currentPracticeId?: string;
 }
@@ -50,6 +75,12 @@ export interface CruxState {
     status: "planned" | "active" | "completed" | "skipped";
     plan: string;
   } | null;
+  deferredPractices?: Array<{
+    cycleId: string;
+    title: string;
+    reason?: string;
+  }>;
+  dailyHabits?: DailyHabitDefinition[];
 }
 
 export interface PracticeDefinition {
@@ -76,6 +107,47 @@ export interface PreventionBoundaryResult {
   warnings: string[];
   alternative?: string;
 }
+
+export interface PracticeEvidenceSignal {
+  kind: "none" | "announcement" | "partial" | "sufficient";
+  reportedCycleId?: string;
+  evidenceDimensions: Array<"execution" | "interpretation" | "body" | "result">;
+}
+
+export interface IdentityMapPatch {
+  dreamline?: {
+    have: string;
+    do: string;
+    be: string;
+    updatedAt: number;
+  };
+  fearSetting?: {
+    whatIf: string;
+    prevent: string;
+    repair: string;
+    partialWins: string;
+    cost6Months: string;
+    cost1Year: string;
+    cost3Years: string;
+    updatedAt: number;
+  };
+  heroName?: string;
+  heroWhy?: string;
+  villainInternal?: string;
+  villainExternal?: string;
+  villainPhilosophical?: string;
+  initialIdentity?: {
+    name: string;
+    behavior: string;
+    belief: string;
+    updatedAt: number;
+  };
+}
+
+export type IdentityMapPatchResult =
+  | { kind: "none" }
+  | { kind: "needs_field" }
+  | { kind: "update"; patch: IdentityMapPatch; message: string };
 
 export interface CompiledPrompt {
   systemInstruction: string;
@@ -137,9 +209,9 @@ export function classifyPracticeRequest(input: string): PreventionBoundaryResult
   if (warnings.length > 0) {
     return {
       allowed: ["Preparacion conservadora", "limites claros", "cierre posterior", "sin dosis ni prescripcion medica"],
-      blocked: ["No doy dosis, protocolos medicos, combinaciones, adquisicion ni ejecucion riesgosa."],
+      blocked: [],
       warnings,
-      alternative: "Mantener una salida conservadora si aparece tension alta.",
+      alternative: "Incluir solo una nota breve de prevencion dentro de la explicacion normal.",
     };
   }
 
@@ -158,6 +230,15 @@ export function renderProgressDiagram(state: CruxState): string {
   const title = state.currentPractice?.title ?? "mapa inicial";
   const cadence = cadenceCopy(state.profile?.cadence);
   const status = state.session?.status ?? "onboarding";
+  const deferred = state.deferredPractices?.length
+    ? [
+      "",
+      "Pendiente para retomar:",
+      ...state.deferredPractices.map((practice) =>
+        `- ${practice.title} (postergada; no cuenta como completada)`
+      ),
+    ]
+    : [];
 
   return [
     "ARQUEIDENTIDAD - FASE VI",
@@ -169,6 +250,7 @@ export function renderProgressDiagram(state: CruxState): string {
     `Preliminar   ${bar(preliminal)}`,
     `Liminar      ${bar(liminal)}`,
     `Postliminar  ${postliminal}`,
+    ...deferred,
     "",
     "Ahora:",
     nextActionLine(state),
@@ -195,11 +277,16 @@ export function renderLearnMap(): string {
 
 export function renderMemory(memory: MemoryLine[]): string {
   if (memory.length === 0) {
-    return "MEMORIA COMPACTA\n--------------------------------\nTodavia no tengo una memoria estable de tu heroe. Usa /start y completa el mapa inicial.";
+    return [
+      "MEMORIA ESTABLE",
+      "--------------------------------",
+      "Todavia no hay recuerdos estables suficientes.",
+      "Solo conservo rasgos de identidad, preferencias, limites, correcciones explicitas y patrones que se repiten; la conversacion casual queda fuera.",
+    ].join("\n");
   }
 
   return [
-    "MEMORIA COMPACTA",
+    "MEMORIA ESTABLE",
     "--------------------------------",
     ...memory.map((line) => `${line.topic}:: ${line.line}`),
   ].join("\n");
@@ -216,6 +303,22 @@ export function renderPracticePlan(practice: PracticeDefinition): string {
 
   if (practice.id === "cycle3_niacin_primer") {
     return renderNiacinPrimerPractice();
+  }
+
+  if (practice.id === "cycle4_ganzfeld") {
+    return renderGanzfeldPractice();
+  }
+
+  if (practice.id === "cycle5_onirotechnology") {
+    return renderOnirotechnologyPractice();
+  }
+
+  if (practice.id === "cycle6_enteogenic_reference") {
+    return renderEnteogenicReferencePractice();
+  }
+
+  if (practice.id === "cycle7_postliminal_retrospective") {
+    return renderPostliminalRetrospectivePractice();
   }
 
   const lines = [
@@ -315,12 +418,129 @@ function renderNiacinPrimerPractice(): string {
   ].join("\n");
 }
 
+function renderGanzfeldPractice(): string {
+  return [
+    "PRACTICA 4 - Homogeneizacion sensorial",
+    "--------------------------------",
+    "Para que sirve:",
+    "Vas a entrar en el primer umbral liminar: reducir informacion visual y auditiva hasta que la mente empiece a generar patrones propios. La practica no consiste en perseguir visiones; consiste en observar que interpretacion intenta imponerse cuando el estimulo externo se vuelve uniforme.",
+    "",
+    "Preparacion:",
+    "1. Reserva hasta 60 minutos. Si es tu primera vez, puedes empezar con menos tiempo y subir despues.",
+    "2. Usa un espacio quieto, privado y fisicamente seguro.",
+    "3. Prepara un campo visual uniforme. La referencia clasica usa dos mitades limpias de una pelota de ping-pong sobre los ojos.",
+    "4. Coloca una luz roja suave frente al rostro para crear un campo visual estable.",
+    "5. Usa ruido blanco o rosa a volumen moderado, idealmente con audifonos que aislen bien.",
+    "",
+    "Ejecucion:",
+    "1. Acuestate o sientate sin tener que sostener tension.",
+    "2. Deja los ojos abiertos bajo el campo uniforme.",
+    "3. Permanece quieto y no busques una experiencia especial.",
+    "4. Si aparecen nieve visual, imagenes, formas, impresiones auditivas o asociaciones raras, observalas sin convertirlas en amenaza.",
+    "5. Detecta la microtematica: que historia automatica intenta imponer tu mente.",
+    "6. Elige una hipertematica: esto es patron naciendo del ruido; esto es plasticidad; esto es orden apareciendo sin fuerza.",
+    "7. Al salir, vuelve lento y registra lo visto antes de explicarlo demasiado.",
+    "",
+    "Prevencion breve:",
+    "Evitala si hoy hay panico fuerte, desrealizacion intensa, migraña activa, sensibilidad visual importante, mania, psicosis o una sensacion de inestabilidad. Si la experiencia se vuelve desorganizante, paras y vuelves a orientarte en el cuarto.",
+    "",
+    "Cierre:",
+    "Cuando termines, cuentame que aparecio, que interpretacion intento tomar el control, que hipertematica elegiste y que identidad sostuvo mejor el umbral.",
+  ].join("\n");
+}
+
+function renderOnirotechnologyPractice(): string {
+  return [
+    "PRACTICA 5 - Onirotecnologia",
+    "--------------------------------",
+    "Para que sirve:",
+    "Vas a entrenar memoria onirica y lucidez. El objetivo es que tu identidad aprenda a reconocer estados, patrones y signos incluso cuando la experiencia cambia de reglas.",
+    "",
+    "Preparacion diaria:",
+    "1. Apenas despiertes, escribe fragmentos de sueño antes de mirar el telefono o hablar de otra cosa.",
+    "2. Durante el dia, elige un disparador que ya ocurra: puertas, revisar la hora, mirar el celular o sentir una emocion fuerte.",
+    "3. Cada vez que aparezca el disparador, pregunta: estoy soñando?",
+    "4. Compruebalo leyendo un texto dos veces o mirando dos veces un patron.",
+    "",
+    "Practica nocturna dos veces por semana:",
+    "1. Duerme unas 5 horas.",
+    "2. Despierta de 10 a 20 minutos. Si lo toleras bien, otro dia puedes probar mas tiempo.",
+    "3. Recuerda el ultimo sueño o un signo onirico probable.",
+    "4. Visualiza que notas ese signo dentro del sueño.",
+    "5. Repite con calma: la proxima vez que este soñando, recordare que estoy soñando.",
+    "6. Vuelve a dormir lo mas rapido posible.",
+    "",
+    "Si aparece lucidez:",
+    "1. No te emociones de golpe.",
+    "2. Mira tus manos, frota las manos o gira suavemente para estabilizar.",
+    "3. Haz una accion elegida antes de dormir: observar, preguntar, crear un simbolo o activar tu identidad.",
+    "",
+    "Prevencion breve:",
+    "No sacrifiques sueño de forma agresiva. Si el metodo te deja irritable, ansioso o agotado, bajamos intensidad y volvemos a recuerdo de sueños + chequeos de realidad.",
+    "",
+    "Cierre:",
+    "Cuentame que recordaste, que signo aparecio, que chequeo hiciste y como cambio tu relacion con el sueño.",
+  ].join("\n");
+}
+
+function renderEnteogenicReferencePractice(): string {
+  return [
+    "PRACTICA 6 - Umbral enteogenico de referencia",
+    "--------------------------------",
+    "Para que sirve:",
+    "Esta sub-fase funciona como marco de discernimiento, no como instruccion operativa. La pregunta de Fase VI es si una experiencia intensa se vuelve mas cosmica, ordenadora y creativa, o mas caotica, fragmentada y desestabilizante.",
+    "",
+    "Trabajo permitido aqui:",
+    "1. Revisar intencion, contexto, identidad y limites.",
+    "2. Comparar experiencias intensas con practicas conservadoras: NSDR hardcore, homogeneizacion sensorial, onirotecnologia, frio o ayuno cuando aplique.",
+    "3. Distinguir expansion proteica de desorganizacion.",
+    "4. Preparar integracion: que interpretacion conservar, que habito nace y que evidencia lo sostiene.",
+    "",
+    "Criterio de decision:",
+    "Si una practica vuelve todo mas caotico que cosmico, no se intensifica. Se vuelve a NSDR hardcore, sueño, alimentacion, rutina y practicas seguras hasta recuperar estructura.",
+    "",
+    "Prevencion breve:",
+    "No doy instrucciones de adquisicion, dosis, combinaciones ni uso de sustancias. Tampoco se debe jugar con esto si hay historia personal o familiar de psicosis, esquizofrenia, bipolaridad, mania, desestabilizacion severa o medicacion incompatible. Si hay duda, se consulta con un profesional calificado.",
+    "",
+    "Cierre:",
+    "Cuentame que umbral estas evaluando, que limite necesitas respetar, que practica conservadora puede darte informacion parecida y que identidad debe sostener la integracion.",
+  ].join("\n");
+}
+
+function renderPostliminalRetrospectivePractice(): string {
+  return [
+    "PRACTICA 7 - Retrospectiva postliminar",
+    "--------------------------------",
+    "Para que sirve:",
+    "Vas a cerrar Fase VI convirtiendo experiencias en criterio. Aqui no buscamos acumular mas intensidad; buscamos decidir que practicas fueron mas proteicas para ti: cuales aumentaron plasticidad, adaptabilidad, energia, unidad o claridad sin romperte.",
+    "",
+    "Revision:",
+    "1. Mira la fase preliminar: NSDR, miedo social y niacina o su version adaptada.",
+    "2. Mira la fase liminar: homogeneizacion sensorial, onirotecnologia y umbral enteogenico como marco de discernimiento.",
+    "3. Identifica la practica que mas energia te dio despues, no solo durante.",
+    "4. Identifica la practica que mas aumento tu sensacion de unidad, creatividad o flexibilidad.",
+    "5. Identifica que microtematica se repitio y que hipertematica funciono mejor.",
+    "",
+    "Decision:",
+    "1. Actualiza tu identidad con evidencia real.",
+    "2. Elige que habito o creencia se queda en tu rutina Quest.",
+    "3. Decide si quieres repetir Fase VI trimestral o semestralmente.",
+    "",
+    "Cierre:",
+    "Cuentame cual practica fue mas proteica, que identidad quedo mas viva, que habito se queda y cada cuanto quieres repetir la fase.",
+  ].join("\n");
+}
+
 export function compilePrompt(content: CruxContent, state: CruxState, userMessage: string): CompiledPrompt {
   const practice = content.practices.find((item) => item.id === state.session?.currentCycleId);
   const memories = state.memories.length > 0
     ? state.memories.map((line) => `${line.topic}:: ${line.line}`).join("\n")
     : "memory.empty:: aun no hay memoria estable";
   const profile = JSON.stringify(state.profile ?? {}, null, 2);
+  const recentConversation = (state.recentMessages ?? [])
+    .slice(-12)
+    .map((message) => `${message.direction === "inbound" ? "usuario" : "tutor"}: ${message.text.slice(0, 800)}`)
+    .join("\n---\n") || "sin conversacion reciente";
 
   const userContext = [
     "RUTAS DEL TUTOR",
@@ -338,6 +558,9 @@ export function compilePrompt(content: CruxContent, state: CruxState, userMessag
     "MEMORIA DEL USUARIO",
     memories,
     "",
+    "CONVERSACION RECIENTE",
+    recentConversation,
+    "",
     "PERFIL",
     profile,
     "",
@@ -354,8 +577,59 @@ export function compilePrompt(content: CruxContent, state: CruxState, userMessag
   };
 }
 
-export function getToolDeclarations(): unknown[] {
-  return [
+export function getToolDeclarations(route?: string, intent?: string): unknown[] {
+  const declarations = [
+    {
+      name: "get_daily_habit_state",
+      description: "Cargar rutina diaria, dia local, cheat day, empty day, habitos activos, pendientes y practica de fase activa.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+    {
+      name: "mark_daily_habits_done",
+      description: "Marcar uno o varios habitos diarios como completados para la fecha local actual.",
+      parameters: {
+        type: "object",
+        properties: {
+          text: { type: "string" },
+          habitKeys: { type: "array", items: { type: "string" } },
+        },
+        required: ["text"],
+      },
+    },
+    {
+      name: "render_daily_habit_tui",
+      description: "Devolver panel de texto Telegram-safe de la rutina nucleo diaria.",
+      parameters: {
+        type: "object",
+        properties: {},
+      },
+    },
+    {
+      name: "set_cheat_day",
+      description: "Configurar el dia semanal sin notificaciones de habitos.",
+      parameters: {
+        type: "object",
+        properties: {
+          weekday: { type: "number" },
+        },
+        required: ["weekday"],
+      },
+    },
+    {
+      name: "add_core_routine_habit",
+      description: "Agregar un nuevo habito diario al core routine si hay slot desbloqueado, maximo cuatro incluyendo Tummo-Identidad.",
+      parameters: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          description: { type: "string" },
+        },
+        required: ["title"],
+      },
+    },
     {
       name: "get_user_state",
       description: "Cargar perfil, sesion, memoria compacta, practica actual y resumen de progreso del usuario.",
@@ -366,11 +640,20 @@ export function getToolDeclarations(): unknown[] {
     },
     {
       name: "update_user_profile",
-      description: "Actualizar cadencia, zona horaria, identidad del heroe, villanos o limites.",
+      description: "Actualizar cadencia, zona horaria, identidad inicial, identidad final, retos o limites.",
       parameters: {
         type: "object",
         properties: {
           cadence: { type: "string", enum: ["weekly", "biweekly"] },
+          initialIdentity: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              behavior: { type: "string" },
+              belief: { type: "string" },
+              updatedAt: { type: "number" },
+            },
+          },
           heroName: { type: "string" },
           heroWhy: { type: "string" },
           villainInternal: { type: "string" },
@@ -470,6 +753,34 @@ export function getToolDeclarations(): unknown[] {
       },
     },
   ];
+  return declarations.filter((declaration) => isAgentToolAuthorized(declaration.name, route, intent));
+}
+
+export function isAgentToolAuthorized(name: string, route?: string, intent?: string): boolean {
+  if (name === "get_daily_habit_state" || name === "render_daily_habit_tui" || name === "get_user_state"
+    || name === "render_progress_diagram" || name === "send_telegram_message") {
+    return true;
+  }
+  if (name === "mark_daily_habits_done") {
+    return (route === "daily_habit" && (intent === "confirm_daily_habit" || intent === "partial_daily_habit"))
+      || (route === "debrief" && intent === "submit_mixed_evidence");
+  }
+  if (name === "set_cheat_day") {
+    return route === "habit_status" && (intent === "set_cheat_day" || intent === "set_routine_days");
+  }
+  if (name === "add_core_routine_habit") {
+    return route === "daily_habit" && intent === "add_core_habit";
+  }
+  if (name === "update_user_profile") {
+    return route === "settings" && (intent === "edit_identity_map" || intent === "change_settings");
+  }
+  if (name === "log_practice_event" || name === "create_debrief") {
+    return route === "debrief" && (intent === "submit_evidence" || intent === "submit_mixed_evidence");
+  }
+  if (name === "create_bridgecrux_report") {
+    return route === "report" && intent === "report_problem";
+  }
+  return false;
 }
 
 export function choosePractice(practices: PracticeDefinition[], cycleId?: string): PracticeDefinition {
@@ -521,9 +832,9 @@ export function isClarificationRequest(text: string): boolean {
 
 export function parseVillains(text: string): Pick<CruxProfile, "villainInternal" | "villainExternal" | "villainPhilosophical"> {
   const normalized = normalizeForParsing(text);
-  const internal = findLabeledValue(normalized, ["interno", "internal"]);
-  const external = findLabeledValue(normalized, ["externo", "external"]);
-  const philosophical = findLabeledValue(normalized, ["filosofico", "filosofica", "filosofia", "philosophical"]);
+  const internal = findLabeledValue(normalized, ["reto interno", "interno", "internal"]);
+  const external = findLabeledValue(normalized, ["reto externo", "externo", "external"]);
+  const philosophical = findLabeledValue(normalized, ["reto filosofico", "filosofico", "filosofica", "filosofia", "philosophical"]);
 
   if (internal || external || philosophical) {
     const parsed: Pick<CruxProfile, "villainInternal" | "villainExternal" | "villainPhilosophical"> = {};
@@ -572,18 +883,310 @@ export function parseHeroIdentity(text: string): Pick<CruxProfile, "heroName" | 
   return {};
 }
 
+const IDENTITY_MAP_LABELS = {
+  external: ["reto externo", "externo"],
+  internal: ["reto interno", "interno"],
+  philosophical: ["reto filosofico", "filosofico", "filosofia"],
+  finalIdentity: [
+    "nombre de mi identidad final",
+    "nombre de la identidad final",
+    "nombre de identidad final",
+    "nombre identidad final",
+    "identidad final",
+    "nombre del heroe final",
+    "heroe final",
+    "heroe",
+  ],
+  finalWhy: ["por que final", "porque final", "por que", "porque"],
+  initialName: ["nombre de mi identidad inicial", "nombre de la identidad inicial", "nombre identidad inicial", "identidad inicial"],
+  initialBehavior: ["comportamiento inicial", "comportamiento actual"],
+  initialBelief: ["creencia inicial", "historia inicial", "creencia actual", "historia actual"],
+  dreamHave: ["dreamline tener", "quiero tener"],
+  dreamDo: ["dreamline hacer", "quiero hacer"],
+  dreamBe: ["dreamline ser", "quiero ser"],
+  fearWhatIf: ["fear setting que tal si", "fear-setting que tal si", "que tal si"],
+  fearPrevent: ["fear setting prevenir", "fear-setting prevenir", "prevenir"],
+  fearRepair: ["fear setting reparar", "fear-setting reparar", "reparar"],
+  fearPartialWins: ["ganancia de exito parcial", "ganancias de exito parcial", "ganancia parcial"],
+  fearCost6Months: ["costo de inaccion 6 meses", "costo 6 meses"],
+  fearCost1Year: ["costo de inaccion 1 ano", "costo 1 ano"],
+  fearCost3Years: ["costo de inaccion 3 anos", "costo 3 anos"],
+} as const;
+
+const IDENTITY_MAP_BOUNDARY_LABELS = Object.values(IDENTITY_MAP_LABELS)
+  .flat()
+  .sort((left, right) => right.length - left.length);
+
+const IDENTITY_MAP_CORRECTION_ACTION = /\b(cambia|cambiar|corrige|corregir|actualiza|actualizar|agrega|agregar|agreguemos|anade|anadir|sumar|suma|modifica|modificar|incluye|incluir)\b/;
+const IDENTITY_MAP_SIGNAL_LABELS = [
+  "mapa",
+  "identidad",
+  "reto",
+  "dreamline",
+  "fear setting",
+  "fear-setting",
+  ...IDENTITY_MAP_BOUNDARY_LABELS.filter((label) => label !== "porque" && label !== "por que"),
+].map(normalizeForParsing);
+
+export function isIdentityMapCorrectionSignal(text: string): boolean {
+  const normalized = normalizeForParsing(text);
+  return IDENTITY_MAP_CORRECTION_ACTION.test(normalized)
+    && IDENTITY_MAP_SIGNAL_LABELS.some((label) => normalized.includes(label));
+}
+
+export function parseIdentityMapPatch(text: string, state: CruxState): IdentityMapPatchResult {
+  const normalized = normalizeForParsing(text);
+  if (!isIdentityMapCorrectionSignal(text)) return { kind: "none" };
+
+  const append = /\b(agrega|agregar|agreguemos|anade|anadir|sumar|suma|incluye|incluir)\b/.test(normalized);
+  const patch: IdentityMapPatch = {};
+  const changed: string[] = [];
+
+  const external = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.external);
+  if (external) {
+    patch.villainExternal = mergeIdentityMapValue(state.profile?.villainExternal, external, append);
+    changed.push("reto externo");
+  }
+
+  const internal = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.internal);
+  if (internal) {
+    patch.villainInternal = mergeIdentityMapValue(state.profile?.villainInternal, internal, append);
+    changed.push("reto interno");
+  }
+
+  const philosophical = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.philosophical);
+  if (philosophical) {
+    patch.villainPhilosophical = mergeIdentityMapValue(state.profile?.villainPhilosophical, philosophical, append);
+    changed.push("reto filosofico");
+  }
+
+  const explicitFinalIdentity = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.finalIdentity);
+  const finalIdentity = explicitFinalIdentity ?? extractNaturalFinalIdentityName(text, normalized);
+  const finalWhy = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.finalWhy) ?? extractIdentityMapReason(text);
+  if (finalIdentity) {
+    const parsed = splitIdentityNameAndWhy(finalIdentity);
+    patch.heroName = parsed.name.slice(0, 160);
+    if (parsed.why || finalWhy) patch.heroWhy = (parsed.why ?? finalWhy ?? "").slice(0, 500);
+    changed.push("identidad final");
+  } else if (finalWhy) {
+    patch.heroWhy = mergeIdentityMapValue(state.profile?.heroWhy, finalWhy, append);
+    changed.push("por que final");
+  }
+
+  const initialName = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.initialName);
+  const initialBehavior = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.initialBehavior);
+  const initialBelief = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.initialBelief);
+  if (initialName || initialBehavior || initialBelief) {
+    const current = state.profile?.initialIdentity;
+    const name = initialName ?? current?.name;
+    const behavior = initialBehavior ?? current?.behavior;
+    const belief = initialBelief ?? current?.belief;
+    if (!name || !behavior || !belief) return { kind: "needs_field" };
+    patch.initialIdentity = {
+      name: name.slice(0, 160),
+      behavior: behavior.slice(0, 500),
+      belief: belief.slice(0, 500),
+      updatedAt: Date.now(),
+    };
+    changed.push("identidad inicial");
+  }
+
+  const dreamHave = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.dreamHave);
+  const dreamDo = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.dreamDo);
+  const dreamBe = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.dreamBe);
+  if (dreamHave || dreamDo || dreamBe) {
+    const current = state.profile?.dreamline;
+    const have = dreamHave ?? current?.have;
+    const doValue = dreamDo ?? current?.do;
+    const be = dreamBe ?? current?.be;
+    if (!have || !doValue || !be) return { kind: "needs_field" };
+    patch.dreamline = {
+      have: have.slice(0, 1000),
+      do: doValue.slice(0, 1000),
+      be: be.slice(0, 1000),
+      updatedAt: Date.now(),
+    };
+    changed.push("dreamline");
+  }
+
+  const fearWhatIf = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearWhatIf);
+  const fearPrevent = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearPrevent);
+  const fearRepair = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearRepair);
+  const fearPartialWins = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearPartialWins);
+  const fearCost6Months = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearCost6Months);
+  const fearCost1Year = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearCost1Year);
+  const fearCost3Years = extractIdentityMapValue(text, IDENTITY_MAP_LABELS.fearCost3Years);
+  if (fearWhatIf || fearPrevent || fearRepair || fearPartialWins || fearCost6Months || fearCost1Year || fearCost3Years) {
+    const current = state.profile?.fearSetting;
+    const whatIf = fearWhatIf ?? current?.whatIf;
+    const prevent = fearPrevent ?? current?.prevent;
+    const repair = fearRepair ?? current?.repair;
+    const partialWins = fearPartialWins ?? current?.partialWins;
+    const cost6Months = fearCost6Months ?? current?.cost6Months;
+    const cost1Year = fearCost1Year ?? current?.cost1Year;
+    const cost3Years = fearCost3Years ?? current?.cost3Years;
+    if (!whatIf || !prevent || !repair || !partialWins || !cost6Months || !cost1Year || !cost3Years) return { kind: "needs_field" };
+    patch.fearSetting = {
+      whatIf: whatIf.slice(0, 1000),
+      prevent: prevent.slice(0, 1000),
+      repair: repair.slice(0, 1000),
+      partialWins: partialWins.slice(0, 1000),
+      cost6Months: cost6Months.slice(0, 1000),
+      cost1Year: cost1Year.slice(0, 1000),
+      cost3Years: cost3Years.slice(0, 1000),
+      updatedAt: Date.now(),
+    };
+    changed.push("fear-setting");
+  }
+
+  if (changed.length === 0) return { kind: "needs_field" };
+  return {
+    kind: "update",
+    patch,
+    message: `Mapa actualizado: ${Array.from(new Set(changed)).join(", ")}.`,
+  };
+}
+
+function extractIdentityMapValue(text: string, labels: readonly string[]): string | undefined {
+  const boundaries = IDENTITY_MAP_BOUNDARY_LABELS.map(escapeIdentityMapRegExp).join("|");
+  for (const label of labels) {
+    const pattern = new RegExp(
+      `(?:^|[;\\n]|\\b(?:al|a la|el|la|mi|mis|del|de|de la)\\s+|\\b(?:cambia|cambiar|actualiza|actualizar|corrige|corregir|modifica|modificar|agrega|agregar)(?:\\s+(?:el|la|mi|mis|al|a la|del|de|de la))?\\s+)${escapeIdentityMapRegExp(label)}\\s*(?::|=|\\ba\\b)?\\s*([\\s\\S]*?)(?=\\s*(?:[;\\n]|\\b(?:${boundaries})\\b\\s*(?::|=|\\ba\\b))|$)`,
+      "i",
+    );
+    const match = text.match(pattern);
+    const value = match?.[1]?.trim().replace(/^[,:=-]+/, "").trim().replace(/[.]+$/g, "").trim();
+    if (value) return value;
+  }
+  return undefined;
+}
+
+function extractNaturalFinalIdentityName(text: string, normalized: string): string | undefined {
+  const changesIdentityName = /\b(cambia|cambiar|actualiza|actualizar|modifica|modificar)\b/.test(normalized)
+    && /\b(identidad|su nombre|mi nombre|nombre)\b/.test(normalized);
+  if (!changesIdentityName) return undefined;
+
+  const match = text.match(/\b(?:me gusta|quiero que se llame|quiero llamarl[ao]|llamemosl[ao]|el nuevo nombre (?:es|seria))\s+["']?([^.;,\n"']+)/i);
+  return match?.[1]?.trim();
+}
+
+function extractIdentityMapReason(text: string): string | undefined {
+  const otherBoundaries = IDENTITY_MAP_BOUNDARY_LABELS
+    .filter((label) => !IDENTITY_MAP_LABELS.finalWhy.includes(label as typeof IDENTITY_MAP_LABELS.finalWhy[number]))
+    .map(escapeIdentityMapRegExp)
+    .join("|");
+  const pattern = new RegExp(
+    `\\b(?:por que final|porque final|por que|porque)\\b\\s*(?::|=)?\\s*([\\s\\S]*?)(?=\\s*(?:[;\\n]|\\b(?:${otherBoundaries})\\b\\s*(?::|=|\\ba\\b))|$)`,
+    "i",
+  );
+  return text.match(pattern)?.[1]?.trim().replace(/[.]+$/g, "").trim();
+}
+
+function splitIdentityNameAndWhy(value: string): { name: string; why?: string } {
+  const match = value.match(/^(.+?)\s+(?:porque|por que|ya que)\s+(.+)$/i);
+  if (!match?.[1] || !match[2]) return { name: value.trim() };
+  return { name: match[1].trim(), why: match[2].trim() };
+}
+
+function mergeIdentityMapValue(existing: string | undefined, next: string, append: boolean): string {
+  const cleanNext = next.trim();
+  if (!append || !existing?.trim()) return cleanNext.slice(0, 500);
+  if (normalizeForParsing(existing).includes(normalizeForParsing(cleanNext))) return existing.slice(0, 500);
+  return `${existing.trim()}; ${cleanNext}`.slice(0, 500);
+}
+
+function escapeIdentityMapRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function buildDebrief(raw: string): string {
   return [
     "CIERRE DE PRACTICA",
     "--------------------------------",
     `Evidencia: ${raw.trim()}`,
     "",
-    "Ciclo emocional:",
-    "evento -> interpretacion -> deseo -> accion -> emocion -> resultado/restart",
-    "",
-    "Ancla:",
-    "Que microtematica apareció y que hipertematica quieres conservar?",
+    "Cierre:",
+    "- descripcion o narracion de la practica",
+    "- microtematica que aparecio",
+    "- hipertematica que mejor funciono",
   ].join("\n");
+}
+
+export function assessPracticeEvidenceSignal(input: string): PracticeEvidenceSignal {
+  const normalized = normalizeForSignal(input);
+  const reportedCycleId = resolvePracticeReference(normalized);
+  const result: PracticeEvidenceSignal = {
+    kind: "none",
+    evidenceDimensions: [],
+  };
+  if (reportedCycleId) result.reportedCycleId = reportedCycleId;
+
+  const announcementVerb = "(?:enviar|mandar|pasar|contar)(?:te|telo|tela|telos|telas|lo|la|los|las)?";
+  const announcement = new RegExp(`\\b(quiero|quisiera|me gustaria|voy a|ire a|estoy por|estoy a punto de|debo)\\b.{0,45}\\b${announcementVerb}\\b.{0,30}\\b(reporte|informe|debrief|evidencia|practica)\\b`).test(normalized)
+    || new RegExp(`\\b(te puedo|puedo|se puede)\\b.{0,35}\\b${announcementVerb}\\b`).test(normalized);
+  if (announcement) {
+    result.kind = "announcement";
+    return result;
+  }
+
+  const completion = /\b(ya hice|lo hice|hice|realice|complete|termine|finalice|acabe|estuve|practique)\b/.test(normalized);
+  const structuredFields = [
+    /\b(descripcion|narracion|practica)\s*:/,
+    /\bmicrotematica\s*:/,
+    /\bhipertematica\s*:/,
+    /\bque paso\s*:/,
+    /\binterpretacion\s*:/,
+    /\b(cuerpo|emocion|cuerpo\/emocion)\s*:/,
+    /\baccion\s*:/,
+    /\bresultado\s*:/,
+  ].filter((pattern) => pattern.test(normalized)).length;
+
+  const dimensions: PracticeEvidenceSignal["evidenceDimensions"] = [];
+  if (completion && (/\b(minuto|minutos|hora|horas|respir|antifaz|musica|weightless|suelo|calor|rubor|cosquilleo|sueno|sueño)\b/.test(normalized) || normalized.length >= 100)) {
+    dimensions.push("execution");
+  }
+  if (/\b(interprete|interpretacion|pense|pensaba|me dije|significo|microtematica|hipertematica|identidad)\b/.test(normalized)) {
+    dimensions.push("interpretation");
+  }
+  if (/\b(senti|sentia|cuerpo|emocion|angustia|calma|relajad|miedo|valor|energia|dolor|tension)\b/.test(normalized)) {
+    dimensions.push("body");
+  }
+  if (/\b(resultado|al final|despues|cambio|logre|pude|me ayudo|desee|aprendi|quedo)\b/.test(normalized)) {
+    dimensions.push("result");
+  }
+  if (/\bhipertematica\b/.test(normalized) && !dimensions.includes("result")) {
+    dimensions.push("result");
+  }
+  result.evidenceDimensions = dimensions;
+
+  if (!completion && structuredFields < 2) return result;
+  if (structuredFields >= 3 || (normalized.length >= 120 && dimensions.length >= 2)) {
+    result.kind = "sufficient";
+    return result;
+  }
+  result.kind = "partial";
+  return result;
+}
+
+export function resolvePracticeReference(text: string): string | undefined {
+  const normalized = normalizeForSignal(text);
+  if (/\b(nsdr|pre[- ]?hypnos|practica 1|practica uno|ciclo 1|ciclo uno)\b/.test(normalized)) return "cycle1_prehypnos_nsdr";
+  if (/\b(reto social|miedo social|exposicion social|practica 2|practica dos|ciclo 2|ciclo dos)\b/.test(normalized)) return "cycle2_social_fear";
+  if (/\b(niacina|interpretacion del calor|practica 3|practica tres|ciclo 3|ciclo tres)\b/.test(normalized)) return "cycle3_niacin_primer";
+  if (/\b(ganzfeld|homogeneizacion sensorial|practica 4|practica cuatro|ciclo 4|ciclo cuatro)\b/.test(normalized)) return "cycle4_ganzfeld";
+  if (/\b(oniro|sueno lucido|sueño lucido|practica 5|practica cinco|ciclo 5|ciclo cinco)\b/.test(normalized)) return "cycle5_onirotechnology";
+  if (/\b(enteogen|psilocib|dmt|practica 6|practica seis|ciclo 6|ciclo seis)\b/.test(normalized)) return "cycle6_enteogenic_reference";
+  if (/\b(postliminar|retrospectiva|repeticion trimestral|repeticion semestral|practica 7|practica siete|ciclo 7|ciclo siete)\b/.test(normalized)) return "cycle7_postliminal_retrospective";
+  return undefined;
+}
+
+function normalizeForSignal(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function normalizeMemoryLines(lines: MemoryLine[], maxLines = 12): MemoryLine[] {
@@ -609,6 +1212,14 @@ export function buildMemoryCandidates(state: CruxState, observation: string): Me
   const current = normalizeMemoryLines(state.memories);
   const next = [...current];
   const trimmed = observation.trim().replace(/\s+/g, " ");
+
+  if (state.profile?.initialIdentity?.name) {
+    next.push({
+      topic: "identity.initial",
+      line: `Parte desde "${state.profile.initialIdentity.name}": conducta ${state.profile.initialIdentity.behavior}; creencia ${state.profile.initialIdentity.belief}.`,
+      confidence: 0.7,
+    });
+  }
 
   if (state.profile?.heroName) {
     next.push({
@@ -677,13 +1288,28 @@ function nextActionLine(state: CruxState): string {
   if (!state.currentPractice) {
     return "Elige una practica con /practice.";
   }
+  if (state.session?.currentCycleId === "cycle1_prehypnos_nsdr") {
+    return "1. preparar oscuridad y tiempo; 2. respiracion y escaneo corporal; 3. registrar ruido vaciado, identidad e hipertematica.";
+  }
   if (state.session?.currentCycleId === "cycle2_social_fear") {
-    return "1. reto social seguro; 2. observar interpretacion automatica; 3. contar que paso.";
+    return "1. elegir exposicion social segura; 2. observar la interpretacion automatica; 3. aplicar la hipertematica y registrar el cambio.";
   }
-  if (state.ledgerSummary.prepCount === 0) {
-    return "1. NSDR mistico; 2. ancla breve; 3. contar que paso para cerrar.";
+  if (state.session?.currentCycleId === "cycle3_niacin_primer") {
+    return "1. revisar contraindicaciones; 2. preparar la hipertematica; 3. observar senal, interpretacion y resultado corporal.";
   }
-  return "Cierra el ciclo contando que paso y que cambio observaste.";
+  if (state.session?.currentCycleId === "cycle4_ganzfeld") {
+    return "1. preparar campo visual y sonido uniforme; 2. observar patrones generados; 3. registrar interpretacion e hipertematica.";
+  }
+  if (state.session?.currentCycleId === "cycle5_onirotechnology") {
+    return "1. registrar suenos al despertar; 2. practicar chequeos de realidad; 3. preparar la siguiente sesion WBTB + MILD.";
+  }
+  if (state.session?.currentCycleId === "cycle6_enteogenic_reference") {
+    return "1. completar filtros de prevencion; 2. definir identidad e hipertematica; 3. usar la ruta permitida o su alternativa estructurada.";
+  }
+  if (state.session?.currentCycleId === "cycle7_postliminal_retrospective") {
+    return "1. revisar evidencias; 2. elegir practica mas proteica e hipertematicas; 3. definir repeticion y siguiente identidad.";
+  }
+  return "Revisa la practica activa y completa su siguiente accion concreta.";
 }
 
 function cadenceCopy(cadence?: Cadence): string {
@@ -702,7 +1328,7 @@ function sessionStatusCopy(status: string): string {
 function findLabeledValue(text: string, labels: string[]): string | undefined {
   for (const label of labels) {
     const pattern = new RegExp(
-      `(?:^|[;\\n]|\\by\\s+)\\s*${label}\\s*[:=-]\\s*([\\s\\S]*?)(?=\\s*(?:[;\\n]|\\by\\s+)?(?:nombre|heroe|identidad|porque|por que|why|razon|interno|internal|externo|external|filosofico|filosofica|filosofia|philosophical)\\s*[:=-]|$)`,
+      `(?:^|[;\\n]|\\by\\s+)\\s*${label}\\s*[:=-]\\s*([\\s\\S]*?)(?=\\s*(?:[;\\n]|\\by\\s+)?(?:nombre|heroe|identidad|porque|por que|why|razon|reto interno|interno|internal|reto externo|externo|external|reto filosofico|filosofico|filosofica|filosofia|philosophical)\\s*[:=-]|$)`,
       "i",
     );
     const match = text.match(pattern);

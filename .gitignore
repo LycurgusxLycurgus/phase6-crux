@@ -5,16 +5,26 @@ node_modules/
 coverage/
 dist/
 .convex/
+.playwright-cli/
+output/
 
 #Bridge
 
 .agents/
-agentic/
+agentic/*
+agentic/design/
+agentic/design/**
 bridgecode/
 agents.md
+bridgecrux-primitives/*
+context/
+
 context1.txt
 context2.txt
 issues.txt
-
-
-
+context3.txt
+context4.txt
+context5.txt
+front-winterlake.txt
+quest-winterlake.txt
+user-context4.txt

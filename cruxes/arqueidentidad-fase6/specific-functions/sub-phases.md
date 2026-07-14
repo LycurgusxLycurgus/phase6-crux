@@ -1,189 +1,193 @@
-# Arqueidentidad Phase 6 Sub-Phases
+# Sub-fases de Arqueidentidad Fase VI
 
-These sub-phases define the current process sequence for the app. Frontmatter lets the runtime identify each sub-phase; the body is the source of truth for what the tutor should teach and guide.
+Estas sub-fases definen la secuencia actual del crux. El frontmatter permite que el runtime identifique cada practica; el cuerpo es la fuente canonica para lo que el tutor debe ensenar, adaptar y guiar en espanol.
 
 ---
 id: cycle0_intake
 title: Ciclo 0 - Mapa inicial del heroe
-when: Use when the user has no completed rhythm, identity with why, or obstacles map.
+when: Usar cuando el usuario todavia no tiene ritmo, dreamline, fear-setting, identidad inicial, retos, identidad final con por que, dias de rutina o decision de habitos extra.
 tools: update_user_profile, update_memory, render_progress_diagram
 ---
 
-The initial map is the only form-like onboarding section. It collects rhythm, identity, and obstacles. The user should not be asked to choose risk mode, internal cycles, or advanced practices.
+El mapa inicial es la unica seccion de onboarding que funciona como formulario conversacional. El ritmo es el unico campo base del mapa de Arqueidentidad. Despues del ritmo, Quest recoge dreamline, fear-setting, identidad inicial, retos, identidad final con por que, habitos extra opcionales, cheat day y dia vacio. No se le pide al usuario que elija modo de riesgo, ciclos internos o practicas avanzadas.
 
-The rhythm is either semanal or quincenal. Semanal creates frequent contact and momentum. Quincenal creates more integration time and less pressure.
+El ritmo puede ser semanal o quincenal. Semanal crea contacto frecuente e impulso. Quincenal da mas tiempo de integracion y menos presion.
 
-The identity requires a name and a why. The name gives the user an archetype they can remember under friction. The why prevents the identity from becoming a decorative nickname. A valid identity energizes the user and gives them a better way to act; it does not grow from self-attack.
+Dreamline pregunta que quiere tener, hacer y ser como horizonte para moverse desde la auto-coaccion hacia la identidad flow-mystic. Fear-setting pregunta que teme si intenta esta transformacion, como puede prevenirlo, como puede repararlo, que beneficio parcial aparece incluso antes de la perfeccion y cual seria el costo de no actuar en 6 meses, 1 ano y 3 anos.
 
-The obstacles are not insults or enemies. The internal obstacle is the thought or microthematic that weakens the transformation. The external obstacle is the behavior, environment, or pressure that must be redesigned so the identity can exist. The philosophical obstacle is the wider problem that makes the identity meaningful.
+La identidad inicial es la red actual de comportamientos, habitos, historias y creencias resumida en un nombre, un comportamiento principal y una creencia principal. Es punto de partida, no condena.
 
-Accept imperfect but usable answers. When the answer carries autoattack, fatalism, hatred of third parties, coercion, or empty performance, preserve the user's intention and reformulate it into a trainable obstacle.
+Los retos no son insultos ni enemigos. El reto externo es la conducta, entorno o presion que debe redisenarse para que la identidad final pueda existir. El reto interno es el pensamiento o microtematica que debilita la transformacion. El reto filosofico es el problema amplio que vuelve significativa la identidad.
+
+La identidad final requiere nombre y por que. El nombre le da al usuario un arquetipo recordable bajo friccion. El por que evita que la identidad sea un apodo decorativo. Una identidad valida energiza y da una forma mejor de actuar; no nace de autoataque.
+
+Acepta respuestas imperfectas pero usables. Si la respuesta contiene autoataque, fatalismo, odio a terceros, coercion o performance vacia, conserva la intencion del usuario y reformulala como reto entrenable. Luego pregunta si quiere 0 a 3 habitos diarios extra ademas de Tummo-Identidad; "no por ahora" es valido y muchas veces preferible. Finalmente recoge dos dias distintos: cheat day, donde no hay notificaciones de habitos, y dia vacio, donde las primeras horas son de reset filosofico y luego la rutina sigue normal.
 
 ---
 id: cycle1_prehypnos_nsdr
 title: Ciclo 1 - Preliminar: NSDR mistico hardcore
-when: Use as the first automatic practice after onboarding, or when the user asks for preparation, rest, focus, NSDR, noise reduction, or containment.
+when: Usar como primera practica automatica despues del onboarding, o cuando el usuario pregunte por preparacion, descanso, foco, NSDR, reduccion de ruido o contencion.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This practice opens the preliminar phase through maximum relaxation. It gives the user an empty state where new interpretations and archetypes can take root. The practice should be presented as descanso profundo sin sueno when talking to the user; expand the English term only if the user asks.
+Esta practica abre la fase preliminar mediante relajacion maxima. Le da al usuario un estado vacio donde nuevas interpretaciones y arquetipos pueden echar raiz. Al hablar con el usuario, presenta NSDR como descanso profundo sin sueno; expande el termino en ingles solo si pregunta.
 
-Step 1: Prepare the environment. The user lies down in a dark, quiet room, uses a sleep mask if available, and uses noise-canceling headphones if available. The reference track is "Weightless" by Marconi Union on a continuous loop. The phone should be silenced and the user should set enough time to return slowly.
+Paso 1: Preparar el entorno. El usuario se acuesta en un cuarto oscuro y tranquilo, usa mascara de sueno si tiene y audifonos con cancelacion si tiene. El loop de referencia es "Weightless" de Marconi Union. El telefono queda en silencio y el usuario deja tiempo para volver lentamente.
 
-Step 2: Begin physiological sigh breathing. The user breathes through the nose without noise: one deep inhale, a second small top-off inhale, then one long slow exhale. This continues until the body feels slower.
+Paso 2: Iniciar respiracion de suspiro fisiologico. Respira por la nariz sin ruido: una inhalacion profunda, una segunda inhalacion corta para completar y una exhalacion larga y lenta. Continua hasta que el cuerpo se sienta mas lento.
 
-Step 3: Scan from feet to head. The user moves awareness slowly through the body. Each part is highlighted and relaxed as much as possible.
+Paso 3: Escanear de pies a cabeza. Lleva la atencion lentamente por el cuerpo. Cada zona se ilumina mentalmente y se relaja al maximo.
 
-Step 4: Choose the physical interpretation. The user can interpret each body part as heavy and sinking into the floor, or light and floating upward. The choice should be the one that deepens relaxation.
+Paso 4: Elegir la interpretacion fisica. Cada zona puede sentirse pesada y hundiendose en el suelo, o liviana y elevandose. La opcion correcta es la que profundice la relajacion.
 
-Step 5: Do the second pass. The user senses the whole body at once and notices temperature, heaviness or weightlessness, and the quality of deep relaxedness.
+Paso 5: Hacer una segunda pasada. Siente el cuerpo completo y observa temperatura, peso o levedad, y la cualidad de relajacion profunda.
 
-Step 6: Let go into the protean state. The user stops controlling the visualization and lets the music, darkness, and relaxation unmoor the mind without forcing a mystical experience. If the chosen identity appears as image, phrase, posture, or feeling, let it become vivid.
+Paso 6: Soltar hacia el estado proteico. Deja de controlar la visualizacion y permite que musica, oscuridad y relajacion desanclen la mente sin forzar una experiencia mistica. Si la identidad elegida aparece como imagen, frase, postura o sensacion, deja que se vuelva vivida.
 
-Step 7: Return slowly. After the session, the user moves fingers and toes, opens the eyes gradually, sits up slowly, and writes one short anchor: what interpretation emptied, what identity appeared, and what hyperthematic should be kept.
+Paso 7: Volver lentamente. Mueve dedos y pies, abre los ojos gradualmente, sientate despacio y escribe un ancla corta: que interpretacion se vacio, que identidad aparecio y que hipertematica conviene conservar.
 
-Prevention is brief: this is done lying down or seated in a safe place, never while driving, in water, or anywhere falling asleep would create danger. If panic, dissociation, unusual pain, severe sleep deprivation, or an urgent real-world problem appears, stop and adapt.
+Prevencion breve: se hace acostado o sentado en un lugar seguro, nunca manejando, en agua ni donde quedarse dormido cree peligro. Si aparece panico, disociacion, dolor raro, falta severa de sueno o una urgencia real, se detiene y se adapta.
 
 ---
 id: cycle2_social_fear
 title: Ciclo 2 - Preliminar: exposicion al miedo social
-when: Use after the first practice closes, or when the user asks about social fear, courage, shame, public exposure, discount requests, or micro-social challenges.
+when: Usar despues del cierre de la primera practica, o cuando el usuario pregunte por miedo social, coraje, verguenza, exposicion publica, pedir descuentos o retos micro-sociales.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This practice trains interpretation under the social gaze. The reference action is simple: lie down flat on the back in a safe populated public place for 3 to 5 minutes, remain still, use a hyperthematic during the spike of social fear, then stand up and leave without explaining oneself to bystanders. The goal is not humiliation; the goal is to discover that the gaze of others does not own the user's identity.
+Esta practica entrena interpretacion bajo la mirada social. La accion de referencia es simple: acostarse boca arriba en un lugar publico, seguro y poblado durante 3 a 5 minutos, permanecer quieto, usar una hipertematica durante el pico de miedo social, levantarse y salir sin explicar la practica a los demas. El objetivo no es humillarse; el objetivo es descubrir que la mirada de otros no posee la identidad del usuario.
 
-Step 1: Choose the location. It should be public enough to activate the social gaze and safe enough that the user is not blocking traffic, creating danger, or violating rules.
+Paso 1: Elegir lugar. Debe ser lo bastante publico para activar la mirada social y lo bastante seguro para no bloquear paso, crear peligro ni violar reglas.
 
-Step 2: Choose the hyperthematic before acting. The user prepares one sentence that transforms the fear. It can point to freedom, invisibility, play, embodiment, or the fact that the social gaze cannot touch the physical body.
+Paso 2: Elegir la hipertematica antes de actuar. El usuario prepara una frase que transforme el miedo. Puede apuntar a libertad, juego, encarnacion o al hecho de que la mirada social no toca el cuerpo fisico.
 
-Step 3: Lie down. The user lies flat on the back and stays still for 3 to 5 minutes.
+Paso 3: Acostarse. Se acuesta boca arriba y permanece quieto 3 a 5 minutos.
 
-Step 4: Watch the social-fear spike. The user does not distract from the fear. They notices the microthematic: shame, vulnerability, need to explain, need to flee, or fear of judgment.
+Paso 4: Observar el pico de miedo social. No se distrae del miedo. Nota la microtematica: verguenza, vulnerabilidad, necesidad de explicar, necesidad de huir o miedo al juicio.
 
-Step 5: Inject the hyperthematic. The user repeats or embodies the prepared interpretation until the social gaze becomes material for liberation rather than control.
+Paso 5: Inyectar la hipertematica. Repite o encarna la interpretacion elegida hasta que la mirada social se vuelva material de liberacion y no de control.
 
-Step 6: Exit without performance. The user stands up and leaves calmly, without offering explanations to bystanders and without turning the practice into a show.
+Paso 6: Salir sin performance. Se levanta y se va con calma, sin explicar a curiosos y sin convertir la practica en espectaculo.
 
-Prevention is brief: the place must be legal and physically safe. The user should avoid roads, entrances, narrow walkways, private property, security-sensitive areas, filming third parties, blocking people, frightening people, or creating a scene that forces others to intervene. If the reference action is not appropriate for the user's context, the tutor should scale down to a safer social micro-action while preserving the function: direct exposure to the social gaze plus a hyperthematic.
+Prevencion breve: el lugar debe ser legal y fisicamente seguro. Evitar vias, entradas, pasillos estrechos, propiedad privada, zonas sensibles, grabar a terceros, bloquear personas, asustar gente o crear una escena que obligue a otros a intervenir. Si la accion de referencia no es apropiada, el tutor escala hacia abajo preservando la funcion: exposicion directa a la mirada social + hipertematica.
 
 ---
 id: cycle3_niacin_primer
 title: Ciclo 3 - Preliminar: niacina e interpretacion del calor
-when: Use after the social fear practice closes, or when the user wants to work with bodily intensity, heat, flush, activation, or fear of body sensations.
+when: Usar despues del cierre de miedo social, o cuando el usuario quiera trabajar intensidad corporal, calor, rubor, activacion o miedo a sensaciones del cuerpo.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This practice trains the interpretation of intense bodily sensation. The reference protocol uses niacin flush as a biological training ground: heat, redness, and prickling appear, the mind tries to label them as threat, and the user learns to transform that interpretation into energy, healing, plasticity, or activation.
+Esta practica entrena la interpretacion de una sensacion corporal intensa. El protocolo de referencia usa el rubor de niacina como terreno biologico: aparecen calor, enrojecimiento y cosquilleo; la mente intenta etiquetarlo como amenaza; el usuario aprende a transformar esa interpretacion en energia, sanacion, plasticidad o activacion.
 
-Step 1: Confirm the safety net. The tutor should ask only the necessary screening: whether the user has relevant medical contraindications, medication conflicts, allergy concerns, or a professional reason to avoid niacin. The tutor should not personalize medical dosing.
+Paso 1: Confirmar la red de cuidado. El tutor pregunta solo lo necesario: si hay contraindicaciones medicas relevantes, conflictos con medicacion, alergias o una razon profesional para evitar niacina. El tutor no personaliza dosis medicas.
 
-Step 2: Name the protocol reference without pretending to prescribe it. If the user is following the original Phase 6 protocol, the app can acknowledge that the reference uses a flush-inducing niacin primer. The tutor should frame this as protocol knowledge, not individualized medical advice.
+Paso 2: Nombrar la referencia sin prescribir. Si el usuario sigue el protocolo original de Fase VI, el crux puede reconocer que la referencia usa un primer de niacina que produce rubor. Se presenta como conocimiento del protocolo, no como consejo medico individual.
 
-Step 3: Prepare the hyperthematic before the flush or body signal. The user writes one sentence that changes the context of heat and prickling, for example: "this is my nervous system waking up", "this is the physical feeling of plasticity", or a stronger phrase tied to their chosen identity.
+Paso 3: Preparar la hipertematica antes del rubor o senal corporal. El usuario escribe una frase que cambie el contexto del calor y cosquilleo: esto es mi sistema nervioso despertando; esto es la sensacion fisica de plasticidad; o una frase mas fuerte ligada a su identidad.
 
-Step 4: Observe the onset. As heat, redness, prickling, or any chosen body signal appears, the user watches the first label the mind creates: danger, discomfort, embarrassment, impatience, or panic.
+Paso 4: Observar el inicio. Cuando aparece calor, rubor, cosquilleo o la senal corporal elegida, el usuario observa la primera etiqueta de la mente: peligro, incomodidad, verguenza, impaciencia o panico.
 
-Step 5: Intercept the label. The user applies the hyperthematic immediately, before the emotional cycle turns the body signal into threat.
+Paso 5: Interceptar la etiqueta. Aplica la hipertematica antes de que el ciclo emocional convierta la senal en amenaza.
 
-Step 6: Lean into the chosen interpretation. The user lets the sensation become activating rather than alarming and notices whether the body gives more energy to the chosen identity.
+Paso 6: Inclinarse hacia la interpretacion elegida. Deja que la sensacion se vuelva activacion y observa si el cuerpo le da mas energia a la identidad elegida.
 
-Step 7: Anchor the result. The user writes the body signal, the automatic interpretation, the hyperthematic, and the action that became easier.
+Paso 7: Anclar resultado. Escribe senal corporal, interpretacion automatica, hipertematica y accion que se volvio mas facil.
 
-Prevention is brief: the crux does not give personalized supplement dosing, brand advice, combinations, or medical claims. If the user is not already cleared or comfortable with niacin, use a non-supplement version: heat after walking, natural blush, ordinary tension, or activation in the body.
+Prevencion breve: el crux no da dosis personalizadas, marcas, combinaciones ni promesas medicas. Calor despues de caminar, rubor natural, tension ordinaria o activacion corporal pueden explicar la funcion interpretativa a menor intensidad, pero no reemplazan ni completan silenciosamente este ciclo. Si la niacina no esta disponible o no conviene, recomienda postergar este ciclo, avanzar al siguiente canonico y volver cuando pueda hacerlo con criterio adecuado.
 
 ---
 id: cycle4_ganzfeld
 title: Ciclo 4 - Liminar: homogeneizacion sensorial
-when: Use after Preliminar is complete and the user is ready for a liminar perception practice, or when the user asks about Ganzfeld, sensory homogenization, red light, static, or altered perception.
+when: Usar despues de completar Preliminar, o cuando el usuario pregunte por Ganzfeld, homogeneizacion sensorial, luz roja, estatica o percepcion alterada.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This sub-phase begins liminar execution. Sensory homogenization reduces structured input until the brain begins generating its own patterns. The training question is whether the user can interpret the generated noise as cosmotic unfolding rather than chaotic fragmentation.
+Esta sub-fase inicia la ejecucion liminar. La homogeneizacion sensorial reduce informacion estructurada hasta que el cerebro empieza a generar sus propios patrones. La pregunta de entrenamiento es si el usuario puede interpretar ese ruido generado como despliegue cosmetico y ordenado, no como fragmentacion caotica.
 
-Step 1: Prepare visual homogenization. The reference setup uses a clean white ping-pong ball cut in half, with each half placed securely over the eyes so the visual field becomes uniform.
+Paso 1: Preparar homogeneizacion visual. La referencia usa una pelota blanca de ping-pong limpia, cortada por la mitad, con cada mitad colocada de forma segura sobre los ojos para que el campo visual se vuelva uniforme.
 
-Step 2: Prepare red light. A red light is placed in front of the face so the covered eyes perceive a featureless red field.
+Paso 2: Preparar luz roja. Se coloca una luz roja suave frente al rostro para que los ojos cubiertos perciban un campo rojo sin rasgos.
 
-Step 3: Prepare audio homogenization. The user wears noise-canceling headphones with continuous white or pink noise at moderate volume.
+Paso 3: Preparar homogeneizacion auditiva. El usuario usa audifonos con cancelacion o buen aislamiento y ruido blanco o rosa continuo a volumen moderado.
 
-Step 4: Begin the 60-minute session. The user lies still with eyes open beneath the shells. The point is not to chase hallucinations, but to let the brain meet unstructured input.
+Paso 4: Iniciar la sesion. La referencia completa dura 60 minutos, pero se puede adaptar si el usuario esta empezando. Permanece quieto con los ojos abiertos bajo las cubiertas. El punto no es perseguir alucinaciones; es dejar que el cerebro encuentre input no estructurado.
 
-Step 5: Notice generated patterns. Visual snow, static, imagery, or auditory impressions may appear. The user watches the first interpretation the mind tries to impose.
+Paso 5: Notar patrones generados. Pueden aparecer nieve visual, estatica, imagenes, formas o impresiones auditivas. El usuario mira la primera interpretacion que la mente intenta imponer.
 
-Step 6: Apply hyperthematics. The user interprets the noise as cosmotic, beautiful, structured unfolding rather than chaotic fragmentation.
+Paso 6: Aplicar hipertematicas. Interpreta el ruido como despliegue cosmico/cosmetico, bello y estructurado, no como fragmentacion caotica.
 
-Step 7: Journal immediately. The user records what appeared, which interpretation arose, which hyperthematic worked, and which identity held the threshold best.
+Paso 7: Registrar de inmediato. Escribe que aparecio, que interpretacion surgio, que hipertematica funciono y que identidad sostuvo mejor el umbral.
 
-Prevention is brief: avoid this practice when panic, strong derealization, mania, psychosis, active migraine, or important visual sensitivity is present. Stop if the experience becomes destabilizing.
+Prevencion breve: evitar si hay panico fuerte, desrealizacion intensa, mania, psicosis, migrana activa o sensibilidad visual importante. Detenerse si la experiencia se vuelve desestabilizante.
 
 ---
 id: cycle5_onirotechnology
 title: Ciclo 5 - Liminar: onirotecnologia
-when: Use after sensory homogenization or when the user asks about dreams, dream recall, lucid dreaming, reality checks, WBTB, MILD, or dream signs.
+when: Usar despues de homogeneizacion sensorial, o cuando el usuario pregunte por suenos, recuerdo onirico, sueno lucido, chequeos de realidad, WBTB, MILD o signos oniricos.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This sub-phase uses dreams as a laboratory for interpretation and identity. Dreams show how quickly interpretation creates a world. Lucidity lets the user practice remembering an identity inside that world.
+Esta sub-fase usa los suenos como laboratorio de interpretacion e identidad. Los suenos muestran que tan rapido una interpretacion crea un mundo. La lucidez permite practicar recordar una identidad dentro de ese mundo.
 
-Step 1: Dream recall every morning. The moment the user wakes up, before phone, conversation, or movement when possible, they write every dream fragment they can remember.
+Paso 1: Recuerdo de suenos cada manana. Al despertar, antes del telefono, conversacion o movimiento cuando sea posible, el usuario escribe cada fragmento de sueno que recuerde.
 
-Step 2: Choose reality-check triggers. The user links checks to things they already encounter: doors, checking the time or phone, or strong emotion.
+Paso 2: Elegir disparadores de chequeo de realidad. Vincula los chequeos con cosas que ya ocurren: puertas, revisar hora o celular, o emociones fuertes.
 
-Step 3: Perform the reality check. When the trigger appears, the user genuinely asks, "am I dreaming?" Then they read text twice or inspect a pattern twice. If it changes strangely, that is a dream sign.
+Paso 3: Hacer el chequeo. Cuando aparece el disparador, pregunta de verdad: estoy sonando? Luego lee un texto dos veces o inspecciona un patron dos veces. Si cambia raro, puede ser signo onirico.
 
-Step 4: Practice WBTB + MILD two nights per week if sleep remains healthy. The user wakes after about five hours of sleep and stays awake for 10 to 20 minutes at first. They keep lights low.
+Paso 4: Practicar WBTB + MILD dos noches por semana si el sueno sigue sano. Despierta despues de unas 5 horas y permanece despierto 10 a 20 minutos al inicio, con luz baja.
 
-Step 5: Re-enter with intention. The user recalls the last dream, visualizes noticing the dream sign, and repeats the intention: "the next time I am dreaming, I will remember that I am dreaming." Then they go back to sleep quickly.
+Paso 5: Reingresar con intencion. Recuerda el ultimo sueno, visualiza notar el signo onirico y repite: la proxima vez que este sonando, recordare que estoy sonando. Luego vuelve a dormir rapido.
 
-Step 6: Stabilize lucidity. If the user becomes lucid, they suppress the urge to get excited and anchor the dream by rubbing hands, looking at hands, or spinning.
+Paso 6: Estabilizar lucidez. Si aparece lucidez, evita emocionarte de golpe y ancla el sueno frotando manos, mirando las manos o girando suavemente.
 
-Step 7: Execute one preselected action. The user performs one chosen action inside the dream to test identity and interpretation.
+Paso 7: Ejecutar una accion preseleccionada. Haz una accion elegida dentro del sueno para probar identidad e interpretacion.
 
-Prevention is brief: sleep quality has priority. If the method fragments rest too much, return to dream recall and descanso profundo sin sueno. Galantamine remains an advanced reference with precaution, not casual guidance.
+Prevencion breve: la calidad del sueno tiene prioridad. Si el metodo fragmenta demasiado el descanso, vuelve a recuerdo de suenos y descanso profundo sin sueno. Galantamina queda como referencia avanzada con precaucion, no como guia casual.
 
 ---
 id: cycle6_enteogenic_reference
 title: Ciclo 6 - Liminar: protocolo enteogenico
-when: Use when the user asks about psilocybin, DMT, psychedelics, microdosing, mystical extremes, or maximum liminality.
+when: Usar cuando el usuario pregunte por psilocibina, DMT, psicodelicos, microdosis, extremos misticos o maxima liminalidad.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This sub-phase contains the entheogenic protocol as Phase 6 knowledge. It is not casual encouragement. It is a high-intensity liminar practice whose central skill is interpretation under maximum plasticity.
+Esta sub-fase contiene el protocolo enteogenico como conocimiento de Fase VI. No es una invitacion casual. Es una practica liminar de alta intensidad cuya habilidad central es interpretar bajo maxima plasticidad.
 
-Step 1: Safety clearance. The user verifies there is no personal or biological-family history of schizophrenia, psychosis, bipolar disorder, mania, or severe destabilization. If this condition is not clear, the tutor routes away from the practice.
+Paso 1: Claridad de seguridad. El usuario verifica que no haya historia personal ni biologico-familiar de esquizofrenia, psicosis, bipolaridad, mania o desestabilizacion severa. Si esto no esta claro, el tutor redirige fuera de la practica.
 
-Step 2: Pre-perceptual baseline. The protocol begins at a very small, pre-perceptual level so the user can observe biological baseline and practice hyperthematics with subtle shifts before stronger experience.
+Paso 2: Linea base pre-perceptual. El protocolo empieza en un nivel muy pequeno, pre-perceptual, para observar linea base biologica y practicar hipertematicas con cambios sutiles antes de experiencias mas fuertes.
 
-Step 3: Prepare hyperthematics before the session. The user chooses the identity, the interpretation to test, the microthematic to eliminate, and the phrase or image that should turn chaos into cosmos.
+Paso 3: Preparar hipertematicas antes de la sesion. El usuario elige identidad, interpretacion a probar, microtematica a eliminar y frase o imagen que debe transformar caos en cosmos.
 
-Step 4: Evaluate cosmotic versus chaotic. The target is cosmotic experience: deep structure, harmony, meaning, and expanded interpretability. If the experience becomes chaotic, the user applies hyperthematics to reframe panic.
+Paso 4: Evaluar cosmetico/cosmico versus caotico. El objetivo es una experiencia cosmetica: estructura profunda, armonia, significado e interpretabilidad ampliada. Si aparece caos, se aplican hipertematicas para reencuadrar el panico.
 
-Step 5: Stop scaling when interpretation fails. If the user cannot override chaos, the protocol stops. The fallback is Hardcore NSDR and deep ketosis as a more structured endogenous path.
+Paso 5: Detener escalamiento cuando falla la interpretacion. Si el usuario no puede sobrepasar el caos, el protocolo se detiene. El retorno es NSDR hardcore y caminos endogenos mas estructurados.
 
-Step 6: Integrate immediately and in the following days. The user writes what default interpretation dissolved, what identity appeared, what hyperthematic worked, what habit should change, and what belief needs evidence.
+Paso 6: Integrar de inmediato y en los dias siguientes. Escribe que interpretacion por defecto se disolvio, que identidad aparecio, que hipertematica funciono, que habito debe cambiar y que creencia necesita evidencia.
 
-Prevention is brief but firm: the tutor does not provide acquisition routes, vendor advice, illegal instructions, personalized dosing, or reckless escalation. The tutor can discuss the protocol's interpretive structure and the safety nets.
+Prevencion breve y firme: el tutor no da rutas de adquisicion, proveedores, instrucciones ilegales, dosis personalizadas ni escalamiento imprudente. Puede explicar la estructura interpretativa del protocolo y sus redes de cuidado.
 
 ---
 id: cycle7_postliminal_retrospective
 title: Ciclo 7 - Postliminar: repeticion trimestral o semestral
-when: Use after Preliminar and Liminar are complete, or when the user asks to close the full phase and decide repetition.
+when: Usar despues de completar Preliminar y Liminar, o cuando el usuario pida cerrar la fase completa y decidir repeticion.
 tools: start_practice_cycle, log_practice_event, create_debrief
 ---
 
-This sub-phase is the meta-close of Phase 6. It does not carry all anchoring by itself, because every practice already anchors its own hyperthematic. Postliminar decides how the whole protocol will repeat and upgrade the identity.
+Esta sub-fase es el cierre meta de Fase VI. No carga todo el anclaje por si misma, porque cada practica ya ancla su propia hipertematica. Postliminar decide como todo el protocolo va a repetirse y actualizar la identidad.
 
-Step 1: Review the full phase. The user reads the evidence from preliminar and liminar practices.
+Paso 1: Revisar la fase completa. El usuario lee la evidencia de practicas preliminares y liminares.
 
-Step 2: Identify the most protean practice. The user chooses which practice made them feel most plastic, adaptable, energized, mystical, unified, or able to instantiate the chosen identity.
+Paso 2: Identificar la practica mas proteica. Elige cual practica lo hizo sentirse mas plastico, adaptable, energizado, mistico, unido o capaz de instanciar su identidad elegida.
 
-Step 3: Extract the strongest hyperthematics. The user selects the phrases, images, postures, or rituals that actually changed interpretation.
+Paso 3: Extraer las hipertematicas mas fuertes. Selecciona frases, imagenes, posturas o rituales que de verdad cambiaron la interpretacion.
 
-Step 4: Update the identity. The user names what changed in the hero identity and which microthematic is now weaker.
+Paso 4: Actualizar identidad. Nombra que cambio en la identidad heroica y que microtematica quedo mas debil.
 
-Step 5: Choose waking implementation. The user defines one habit and one belief that will collect evidence before the next cycle.
+Paso 5: Elegir implementacion despierta. Define un habito y una creencia que reuniran evidencia antes del proximo ciclo.
 
-Step 6: Schedule repetition. The user chooses a quarterly or semestral repetition of the full Phase 6 protocol.
+Paso 6: Programar repeticion. Elige repeticion trimestral o semestral de Fase VI completa.
 
-The waking-life test remains simple: notice the default interpretation, empty the noise, eliminate the microthematic, deploy the hyperthematic, and take one action that votes for the chosen identity.
+La prueba en vida despierta queda simple: notar la interpretacion por defecto, vaciar ruido, eliminar la microtematica, desplegar la hipertematica y tomar una accion que vote por la identidad elegida.

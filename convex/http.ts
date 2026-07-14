@@ -2,10 +2,13 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { arqueidentidadFase6Content } from "../cruxes/arqueidentidad-fase6/content";
+import { auth } from "./auth";
 
 const BUILD_ID = "phase6-crux-2026-05-27-phase6-prompt-corrections";
 
 const http = httpRouter();
+
+auth.addHttpRoutes(http);
 
 http.route({
   path: "/telegram/webhook",

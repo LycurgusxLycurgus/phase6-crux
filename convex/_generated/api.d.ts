@@ -9,10 +9,19 @@
  */
 
 import type * as agent from "../agent.js";
+import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
+import type * as habitActions from "../habitActions.js";
+import type * as habits from "../habits.js";
 import type * as http from "../http.js";
 import type * as memory from "../memory.js";
 import type * as store from "../store.js";
+import type * as telegram from "../telegram.js";
+import type * as web from "../web.js";
+import type * as webAccess from "../webAccess.js";
+import type * as webAuth from "../webAuth.js";
+import type * as webIdentity from "../webIdentity.js";
+import type * as webPreview from "../webPreview.js";
 
 import type {
   ApiFromModules,
@@ -22,10 +31,19 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   agent: typeof agent;
+  auth: typeof auth;
   crons: typeof crons;
+  habitActions: typeof habitActions;
+  habits: typeof habits;
   http: typeof http;
   memory: typeof memory;
   store: typeof store;
+  telegram: typeof telegram;
+  web: typeof web;
+  webAccess: typeof webAccess;
+  webAuth: typeof webAuth;
+  webIdentity: typeof webIdentity;
+  webPreview: typeof webPreview;
 }>;
 
 /**

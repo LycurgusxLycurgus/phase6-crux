@@ -5,19 +5,35 @@
   "type": "module",
   "description": "Telegram-first BridgeCrux MVP for Arqueidentidad Fase VI.",
   "scripts": {
-    "dev": "npm run build:crux-content && node ./node_modules/convex/bin/main.js dev",
+    "dev": "npm run build:crux-content && node scripts/dev.mjs",
+    "dev:convex": "npm run build:crux-content && node ./node_modules/convex/bin/main.js dev",
+    "dev:web": "node ./node_modules/vite/bin/vite.js",
     "codegen": "npm run build:crux-content && node ./node_modules/convex/bin/main.js codegen",
     "build:crux-content": "node scripts/build-crux-content.mjs",
-    "check": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "check": "npm run check:backend && npm run check:web",
+    "check:backend": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "check:web": "node ./node_modules/typescript/bin/tsc -p tsconfig.app.json --noEmit",
     "test": "node ./node_modules/vitest/vitest.mjs run",
-    "build": "npm run build:crux-content && npm run check && npm run test"
+    "test:web-auth": "node scripts/test-web-auth.mjs",
+    "build:web": "npm run build:crux-content && npm run check && node ./node_modules/vite/bin/vite.js build",
+    "build": "npm run build:web && npm run test"
   },
   "dependencies": {
+    "@auth/core": "0.41.1",
+    "@convex-dev/auth": "0.0.94",
+    "@fontsource-variable/cormorant-garamond": "5.2.6",
+    "@fontsource-variable/inter": "5.2.8",
     "@google/genai": "1.52.0",
-    "convex": "1.37.0"
+    "convex": "1.42.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
     "typescript": "6.0.3",
+    "vite": "8.1.4",
     "vitest": "4.1.5"
   },
   "engines": {

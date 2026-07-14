@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Arqueidentidad Fase VI - task surface</title>
+</head>
+<body>
+  <header>
+    <h1>Arqueidentidad Fase VI</h1>
+    <nav>
+      <a href="#bootstrap">Inicio</a>
+      <a href="#daily">Rutina</a>
+      <a href="#phase">Fase</a>
+      <a href="#settings">Ajustes</a>
+      <a href="#knowledge">Conocimiento</a>
+      <a href="#history">Registros</a>
+      <a href="#system">Sistema</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="bootstrap">
+      <h2>Bootstrap</h2>
+      <form>
+        <fieldset>
+          <legend>Arqueidentidad</legend>
+          <label>Ritmo
+            <select name="cadence">
+              <option>Semanal</option>
+              <option>Quincenal</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Quest - horizonte</legend>
+          <label>Dreamline - tener <textarea name="dreamline_have"></textarea></label>
+          <label>Dreamline - hacer <textarea name="dreamline_do"></textarea></label>
+          <label>Dreamline - ser <textarea name="dreamline_be"></textarea></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Quest - fear-setting</legend>
+          <label>Que tal si <textarea name="fear_what_if"></textarea></label>
+          <label>Prevenir <textarea name="fear_prevent"></textarea></label>
+          <label>Reparar <textarea name="fear_repair"></textarea></label>
+          <label>Ganancia de exito parcial <textarea name="fear_partial_wins"></textarea></label>
+          <label>Costo de la inaccion - 6 meses <textarea name="fear_cost_6_months"></textarea></label>
+          <label>Costo de la inaccion - 1 ano <textarea name="fear_cost_1_year"></textarea></label>
+          <label>Costo de la inaccion - 3 anos <textarea name="fear_cost_3_years"></textarea></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Quest - identidad</legend>
+          <label>Identidad inicial - nombre <input name="initial_identity_name"></label>
+          <label>Comportamiento actual principal <textarea name="initial_identity_behavior"></textarea></label>
+          <label>Historia o creencia actual principal <textarea name="initial_identity_belief"></textarea></label>
+          <label>Reto externo <textarea name="external_challenge"></textarea></label>
+          <label>Reto interno <textarea name="internal_challenge"></textarea></label>
+          <label>Reto filosofico <textarea name="philosophical_challenge"></textarea></label>
+          <label>Identidad final <input name="final_identity_name"></label>
+          <label>Por que importa esta identidad final <textarea name="final_identity_why"></textarea></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Quest - rutina</legend>
+          <label>Habitos extra
+            <select name="extra_habit_count">
+              <option value="0">No agregar extras</option>
+              <option value="1">Agregar 1 habito</option>
+              <option value="2">Agregar 2 habitos</option>
+              <option value="3">Agregar 3 habitos</option>
+            </select>
+          </label>
+          <label>Habito extra 1 <input name="extra_habit_1"></label>
+          <label>Habito extra 2 <input name="extra_habit_2"></label>
+          <label>Habito extra 3 <input name="extra_habit_3"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Quest - dias</legend>
+          <label>Cheat day <select name="cheat_day"><option>domingo</option><option>lunes</option><option>martes</option><option>miercoles</option><option>jueves</option><option>viernes</option><option>sabado</option></select></label>
+          <label>Dia vacio <select name="empty_day"><option>domingo</option><option>lunes</option><option>martes</option><option>miercoles</option><option>jueves</option><option>viernes</option><option>sabado</option></select></label>
+        </fieldset>
+
+        <button type="button">Guardar mapa y empezar</button>
+      </form>
+    </section>
+
+    <section id="daily">
+      <h2>Rutina diaria</h2>
+      <p>Racha: <output>0 dias</output></p>
+      <p>Cheat day: <output>sin definir</output></p>
+      <p>Dia vacio: <output>sin definir</output></p>
+      <h3>Habitos de hoy</h3>
+      <ul>
+        <li><label><input type="checkbox"> Tummo-Identidad</label></li>
+        <li><label><input type="checkbox"> Habito extra 1</label></li>
+        <li><label><input type="checkbox"> Habito extra 2</label></li>
+        <li><label><input type="checkbox"> Habito extra 3</label></li>
+      </ul>
+      <label>Por que votas por tu identidad hoy <textarea></textarea></label>
+      <label>Que habitos hiciste hoy <textarea></textarea></label>
+      <label>Que habitos vas a hacer manana <textarea></textarea></label>
+      <button type="button">Cerrar rutina de hoy</button>
+      <button type="button">Ver rutina pendiente</button>
+      <button type="button">Ver historial de rutina</button>
+    </section>
+
+    <section id="phase">
+      <h2>Fase y sub-fases</h2>
+      <p>Fase actual: <output>Fase VI</output></p>
+      <p>Sub-fase actual: <output>Ciclo 1 - Preliminar</output></p>
+      <p>Siguiente: <output>Ciclo 2 - miedo social</output></p>
+      <p>Anterior: <output>ninguna</output></p>
+      <progress max="100" value="0">0%</progress>
+
+      <h3>Selector de sub-fase</h3>
+      <p>Seleccionar una sub-fase permite consultar sus instrucciones; no cambia el progreso.</p>
+      <select>
+        <option>Ciclo 1 - NSDR mistico hardcore</option>
+        <option>Ciclo 2 - exposicion al miedo social</option>
+        <option>Ciclo 3 - niacina e interpretacion del calor</option>
+        <option>Ciclo 4 - homogeneizacion sensorial</option>
+        <option>Ciclo 5 - onirotecnologia</option>
+        <option>Ciclo 6 - protocolo enteogenico</option>
+        <option>Ciclo 7 - repeticion trimestral o semestral</option>
+      </select>
+      <button type="button">Ver instrucciones</button>
+      <button type="button">Postergar sub-fase activa</button>
+      <button type="button">Reabrir sub-fase marcada por error</button>
+
+      <h3>Cierre de practica</h3>
+      <label>Descripcion o narracion de la practica <textarea></textarea></label>
+      <label>Microtematica que aparecio <textarea></textarea></label>
+      <label>Hipertematica que mejor funciono <textarea></textarea></label>
+      <button type="button">Guardar evidencia</button>
+    </section>
+
+    <section id="settings">
+      <h2>Ajustes</h2>
+      <label>Ritmo
+        <select>
+          <option>semanal</option><option>quincenal</option>
+        </select>
+      </label>
+      <button type="button">Actualizar ritmo</button>
+      <label>Cheat day
+        <select>
+          <option>domingo</option><option>lunes</option><option>martes</option><option>miercoles</option><option>jueves</option><option>viernes</option><option>sabado</option>
+        </select>
+      </label>
+      <label>Dia vacio
+        <select>
+          <option>domingo</option><option>lunes</option><option>martes</option><option>miercoles</option><option>jueves</option><option>viernes</option><option>sabado</option>
+        </select>
+      </label>
+      <button type="button">Actualizar dias</button>
+
+      <h3>Habitos</h3>
+      <button type="button">Ver habitos activos y pausados</button>
+      <button type="button">Agregar habito</button>
+      <button type="button">Pausar habito</button>
+      <button type="button">Reactivar habito</button>
+      <button type="button">Archivar o eliminar habito</button>
+      <button type="button">Condensar habitos</button>
+
+      <h3>Mapa de identidad</h3>
+      <button type="button">Ver mapa</button>
+      <button type="button">Corregir mapa</button>
+      <details>
+        <summary>Campos que pueden corregirse por separado</summary>
+        <ul>
+          <li>Dreamline: tener, hacer, ser</li>
+          <li>Fear-setting: que tal si, prevenir, reparar, ganancia parcial, costo a 6 meses, 1 ano y 3 anos</li>
+          <li>Identidad inicial: nombre, comportamiento y creencia</li>
+          <li>Retos: interno, externo y filosofico</li>
+          <li>Identidad final: nombre y por que</li>
+        </ul>
+        <p>Cada correccion conserva todos los campos que el usuario no nombro.</p>
+      </details>
+    </section>
+
+    <section id="knowledge">
+      <h2>Conocimiento</h2>
+      <button type="button">Ver conceptos base</button>
+      <button type="button">Ver fase preliminar</button>
+      <button type="button">Ver fase liminar</button>
+      <button type="button">Ver fase postliminar</button>
+      <button type="button">Preguntar al tutor</button>
+    </section>
+
+    <section id="history">
+      <h2>Registros</h2>
+      <button type="button">Ver evidencia por ciclo</button>
+      <button type="button">Ver practicas postergadas</button>
+      <button type="button">Ver historial de rutina</button>
+      <button type="button">Reportar problema</button>
+      <button type="button">Ver memoria estable</button>
+    </section>
+
+    <section id="system">
+      <h2>Comportamiento automatico</h2>
+      <p>Recordatorio de rutina por la manana: envio programado.</p>
+      <p>Recordatorio de rutina por la tarde: envio programado.</p>
+      <p>Si el tutor encuentra demanda temporal del proveedor, informa la espera y reintenta una vez despues de 30 segundos.</p>
+      <p>La memoria estable se revisa internamente por acumulacion de respuestas del usuario; no modifica el progreso ni aparece como mensaje automatico.</p>
+    </section>
+  </main>
+</body>
+</html>

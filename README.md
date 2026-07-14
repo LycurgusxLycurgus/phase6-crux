@@ -1,6 +1,6 @@
 # Arqueidentidad Fase VI Crux
 
-Telegram-first BridgeCrux MVP for Arqueidentidad Fase VI. There is no frontend: Telegram is the UI, Convex is backend/memory/cron/webhook, Gemini is the tutor/orchestrator, and the reusable harness lives in `bridgecrux/`.
+Telegram-first BridgeCrux application for Arqueidentidad Fase VI with a mobile web companion. Telegram and React are two authenticated interfaces over the same Convex state; Gemini remains the tutor/orchestrator and the reusable harness lives in `bridgecrux/`.
 
 ## Architecture
 
@@ -11,6 +11,12 @@ Telegram Bot API
   -> Gemini function calling
   -> narrow Convex tools
   -> Telegram text diagrams and replies
+
+Telegram one-time link
+  -> React /acceso exchange
+  -> Convex Auth session for the existing Telegram user
+  -> protected web queries and mutations
+  -> the same routines, profile, practices, and history
 ```
 
 The active domain is Fase VI only. Fases I-V are shown as coming soon and used only as compact context.
@@ -34,6 +40,22 @@ curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
   -d "url=https://YOUR_DEPLOYMENT.convex.site/telegram/webhook" \
   -d "secret_token=$TELEGRAM_WEBHOOK_SECRET"
 ```
+
+The browser reads `VITE_CONVEX_URL`. In local development `vite.config.ts` also accepts the existing `CONVEX_URL`. Set `VITE_TELEGRAM_BOT_USERNAME` without `@` so return actions open the correct guide. `SITE_URL` belongs in the Convex deployment and must be the public frontend origin (`http://localhost:5173` locally and the HTTPS Vercel domain in production).
+
+## Web commands
+
+- `npm run dev` starts Convex and Vite together.
+- `npm run dev:web` starts only the mobile frontend.
+- `npm run dev:convex` starts only the backend.
+- `npm run build:web` typechecks both boundaries and creates the Vite production bundle.
+- `npm run test:web-auth` validates issuance, exchange, single use, supersession, expiration, revocation, and cross-user isolation against the configured development deployment.
+
+The web app is opened through a personalized Telegram link; it has no password or independent registration flow. In Telegram, `/web` issues a ten-minute, one-use link and `/webclose` closes pending links and active browser sessions.
+
+## Vercel
+
+`vercel.json` uses Vercel because this repository can build the Vite frontend and deploy Convex in one command, while preserving branch previews. Configure `CONVEX_DEPLOY_KEY` for the target deployment and set the production `SITE_URL` in Convex. Preview deployments should use their own Convex preview deployment and URL; never point an untrusted preview at production data.
 
 ## Commands
 
